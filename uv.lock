@@ -571,6 +571,7 @@ name = "charts"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [
+    { name = "jinja2" },
     { name = "pydantic-ai" },
     { name = "python-dotenv" },
 ]
@@ -602,6 +603,7 @@ lint = [
 
 [package.metadata]
 requires-dist = [
+    { name = "jinja2", specifier = ">=3.1.6" },
     { name = "pydantic-ai", specifier = ">=0.1.0" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
 ]

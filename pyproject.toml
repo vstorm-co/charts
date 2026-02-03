@@ -10,6 +10,7 @@ authors = [{ name = "Vstorm" }]
 dependencies = [
     "pydantic-ai>=0.1.0",
     "python-dotenv>=1.0.1",
+    "jinja2>=3.1.6",
 ]
 
 # [project.urls]
