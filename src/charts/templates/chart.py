@@ -2,7 +2,8 @@ from jinja2 import Template
 
 SHADCN_CHART_TEMPLATE = Template("""
 "use client"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartContainer } from "@/components/ui/chart"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ChartTooltip, 
+ChartTooltipContent, ChartLegend, ChartLegendContent, ChartContainer } from "@/components/ui/chart"
 
 const chartConfig = {{ chart_config_json }}
 const chartData = {{ chart_data_json }}

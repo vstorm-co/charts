@@ -7,8 +7,8 @@ Agentic charts package for PydanticAI.
 
 from importlib.metadata import version
 
-from charts.base_types import CustomType, BaseComponent
-from charts.types.chart import ChartData, ChartConfig, Chart, ChartToolOutput
+from charts.base_types import BaseComponent, CustomType
+from charts.types.chart import Chart, ChartConfig, ChartData, ChartToolOutput
 
 __all__ = [
     # Base types
@@ -19,8 +19,7 @@ __all__ = [
     "ChartData",
     "ChartConfig",
     "Chart",
-    "ChartToolOutput"
-    
+    "ChartToolOutput",
 ]
 
 __version__ = version("charts")

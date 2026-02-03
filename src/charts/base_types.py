@@ -1,6 +1,7 @@
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict
+
 
 class CustomType(BaseModel):
     """
@@ -19,10 +20,10 @@ class BaseComponent(CustomType):
     component_type: Literal["chart", "table"]
 
 
-#TODO switch to default chart component?
+# TODO switch to default chart component?
 class TableComponent(BaseComponent):
     """Standard table fallback if a chart isn't appropriate"""
-    
+
     component_type: Literal["table"] = "table"
     headers: list[str]
     rows: list[dict[str, Any]]
@@ -47,4 +48,3 @@ class TableComponent(BaseComponent):
 #                         f"UI list can only contain BaseComponent instances, got {type(item)}"
 #                     )
 #         return v
-    
