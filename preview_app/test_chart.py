@@ -40,13 +40,13 @@ agent = Agent("openai:gpt-5.1", output_type=Chart, system_prompt=system_prompt)
 
 @agent.tool
 async def query(ctx: RunContext) -> ChartData:
-    "Query to get the relevant data"
+    """Query to get the relevant data"""
     return ChartData(data=data)
 
 
 @agent.tool
 async def config(ctx: RunContext) -> ChartConfig:
-    "Get the configuration for the plot"
+    """Get the configuration for the plot"""
     return ChartConfig(config=config_instance)
 
 

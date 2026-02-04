@@ -6,7 +6,13 @@ from pydantic import Field, field_validator, model_validator
 from typing_extensions import Self
 
 from charts.base_types import BaseComponent, CustomType
-from charts.templates.chart import SHADCN_CHART_TEMPLATE
+from charts.templates.shadcn.chart import (
+    SHADCN_BAR_CHART_TEMPLATE,
+    SHADCN_PIE_CHART_TEMPLATE,
+    SHADCN_LINE_CHART_TEMPLATE,
+    SHADCN_RADAR_CHART_TEMPLATE,
+    SHADCN_AREA_CHART_TEMPLATE,
+)
 
 
 class ChartTypes(str, Enum):
@@ -14,6 +20,7 @@ class ChartTypes(str, Enum):
     line = "line"
     pie = "pie"
     area = "area"
+    radar = "radar"
 
 
 class ChartMetadata(CustomType):
@@ -29,7 +36,17 @@ class ChartMetadata(CustomType):
 class ChartConfig(CustomType):
     """
     Config for a chart. Maps data keys to labels and colors.
-    Example: {"desktop": {"label": "Desktop", "color": "#2563eb"}}
+
+    Example for bar chart: {"desktop": {"label": "Desktop", "color": "#2563eb"}}
+
+    Example for pie chart: {"category": "subscriptions", "value": 1224,
+    "fill": "var(--color-subscriptions)"}
+
+    Example for line chart: desktop: {"label": "Desktop", "color": "var(--chart-1)"}
+
+    Example for radar chart: { "desktop": { "label": "Desktop", "color": "var(--chart-1)"}
+
+    Example for area chart: {visitors: {label: "Visitors",}, desktop: { label: "Desktop", color: "var(--chart-1)",}}
     """
 
     config: dict[str, dict[str, str]]
@@ -38,7 +55,14 @@ class ChartConfig(CustomType):
 class ChartData(CustomType):
     """
     The actual data points for the chart.
-    Example: [{"month": "Jan", "desktop": 100}, {"month": "Feb", "desktop": 120}]
+
+    Example for bar chart: [{"month": "Jan", "desktop": 100}, {"month": "Feb", "desktop": 120}]
+
+    Example for line chart: [{ month: "January", desktop: 186, mobile: 80 }]
+
+    Example for radar chart: [{ month: "January", desktop: 186, mobile: 80 }]
+
+    Example for area chart: [{ date: "2024-04-01", desktop: 222, mobile: 150 }]
     """
 
     data: list[dict[str, str | int | float | Any]]
@@ -56,7 +80,7 @@ class Chart(BaseComponent):
     chart_config: ChartConfig = Field(..., alias="chartConfig")
     chart_data: ChartData = Field(..., alias="chartData")
 
-    # Helpful fot the frontend to know which key is X-axis
+    # Helpful for the frontend to know which key is X-axis
     x_axis_key: str = Field(..., description="The key in data used for the X-axis (e.g., 'month')")
 
     @field_validator("x_axis_key")
@@ -103,19 +127,55 @@ class ChartToolOutputV2(CustomType):
     @model_validator(mode="after")
     def build_ui_element(self) -> Self:
         if not self.ui:
+            self.ui_element = ""  # Or a placeholder component string
             return self
 
         chart = self.ui[0]
-        template = SHADCN_CHART_TEMPLATE
+
+        # Select template based on chart type
+        if chart.chart_type == "pie":
+            template = SHADCN_PIE_CHART_TEMPLATE
+        elif chart.chart_type == "line":
+            template = SHADCN_LINE_CHART_TEMPLATE
+        elif chart.chart_type == "radar":
+            template = SHADCN_RADAR_CHART_TEMPLATE
+        elif chart.chart_type == "bar":
+            template = SHADCN_BAR_CHART_TEMPLATE
+        elif chart.chart_type == "area":
+            template = SHADCN_AREA_CHART_TEMPLATE
+        else:
+            raise KeyError("Unknown chart type")
+
+        # Get the keys from the config (e.g., ['subscriptions', 'revenue'])
         data_keys = list(chart.chart_config.config.keys())
 
+        # Build a chart_config object that includes both series config
+        # and optional metadata (title/subtitle/description). This keeps
+        # templates backward-compatible while exposing metadata to the
+        # frontend via the same `chart_config` prop.
+        series_config = dict(chart.chart_config.config or {})
+        merged_config: dict = dict(series_config)
+        if getattr(chart, "metadata", None):
+            if chart.metadata.title:
+                merged_config["title"] = chart.metadata.title
+            if chart.metadata.subtitle:
+                merged_config["subtitle"] = chart.metadata.subtitle
+            if chart.metadata.description:
+                merged_config["description"] = chart.metadata.description
+
+        # Sanitize component name for the internal function
+        # Remove non-alphanumeric characters and fall back to a default
+        import re
+
+        raw_name = (chart.metadata.title or "GeneratedChart") if getattr(chart, "metadata", None) else "GeneratedChart"
+        safe_name = re.sub(r"[^0-9A-Za-z_]", "", raw_name.replace(" ", "")) or "GeneratedChart"
+
+        # 3. Render the template
         self.ui_element = template.render(
-            component_name=(
-                chart.metadata.title.replace(" ", "") if chart.metadata.title else "MyChart"
-            ),
-            chart_config_json=json.dumps(chart.chart_config.config, indent=2),
-            chart_data_json=json.dumps(chart.chart_data.data, indent=2),
-            x_axis_key=chart.x_axis_key,
+            component_name=safe_name,
+            chart_config_json=json.dumps(merged_config, ensure_ascii=False, indent=2),
+            chart_data_json=json.dumps(chart.chart_data.data, ensure_ascii=False, indent=2),
+            x_axis_key=chart.x_axis_key or "category",  # Fallback for X Axis
             data_keys=data_keys,
         )
 

@@ -22,20 +22,19 @@ test-fast:
 
 # Run linter
 lint:
-	uv run ruff check src
+	uv run ruff check src preview_app
 
 # Format code
 format:
-	uv run ruff format src
-	uv run ruff check --fix src
-	uv run ruff check src --select I --fix
+	uv run ruff format src preview_app
+	uv run ruff check --fix --select I,ALL src preview_app
 
 # Type checking
 typecheck:
 	uv run pyright
 
 typecheck-mypy:
-	uv run mypy src
+	uv run mypy src preview_app
 
 # Run all checks
 all: format lint typecheck typecheck-mypy typecheck test

@@ -11,7 +11,7 @@ export default function App() {
     const checkStatus = async () => {
       try {
         // We fetch from /src/status.json (Vite serves this)
-        const response = await fetch("/src/status.json");
+        const response = await fetch("/api/status");
         if (response.ok) {
           const data = await response.json();
           setMeta(data);
@@ -46,7 +46,7 @@ export default function App() {
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // Trigger a status refresh
-      const statusResponse = await fetch("/src/status.json");
+      const statusResponse = await fetch("/api/status");
       if (statusResponse.ok) {
         const data = await statusResponse.json();
         setMeta(data);
@@ -55,7 +55,7 @@ export default function App() {
       console.error("Error generating chart:", error);
       // Still refresh status to show any error state
       try {
-        const statusResponse = await fetch("/src/status.json");
+        const statusResponse = await fetch("/api/status");
         if (statusResponse.ok) {
           const data = await statusResponse.json();
           setMeta(data);

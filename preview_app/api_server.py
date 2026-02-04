@@ -1,5 +1,4 @@
-"""
-API Server for the preview app.
+"""API Server for the preview app.
 Handles chart generation requests from the frontend.
 
 To run:
@@ -14,7 +13,7 @@ import time
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
@@ -64,6 +63,9 @@ data = [
     {"month": "June", "subscriptions": 214, "revenue": 610},
 ]
 
+# Global status storage
+current_status = {"status": "Waiting...", "lastUpdated": "Never"}
+
 system_prompt = """
 You are an assistant in querying and structuring data.
 Use provided tools to perform various tasks.
@@ -77,22 +79,28 @@ agent = Agent("openai:gpt-5.1", output_type=Chart, system_prompt=system_prompt)
 
 @agent.tool
 async def query(ctx: RunContext) -> ChartData:
-    "Query to get the relevant data"
+    """Query to get the relevant data"""
     return ChartData(data=data)
 
 
 @agent.tool
 async def config(ctx: RunContext) -> ChartConfig:
-    "Get the configuration for the plot"
+    """Get the configuration for the plot"""
     return ChartConfig(config=config_instance)
 
 
 def update_status(status: str, last_updated: str) -> None:
-    """Update the status.json file."""
+    """Update the status.json file and global state."""
+    # Update in-memory state
+    global current_status
+    current_status["status"] = status
+    current_status["lastUpdated"] = last_updated
+
+    # Update file (optional, but kept for compatibility)
     status_path = Path(__file__).parent / "src" / "status.json"
     os.makedirs(status_path.parent, exist_ok=True)
     with open(status_path, "w") as f:
-        json.dump({"lastUpdated": last_updated, "status": status}, f)
+        json.dump(current_status, f)
 
 
 def update_component(ui_element: str) -> None:
@@ -104,8 +112,7 @@ def update_component(ui_element: str) -> None:
 
 
 async def generate_chart(prompt: str) -> tuple[str, str]:
-    """
-    Generate a chart based on the prompt.
+    """Generate a chart based on the prompt.
     Returns (status_message, ui_element)
     """
     logger.info(f"Received prompt: {prompt[:100]}{'...' if len(prompt) > 100 else ''}")
@@ -121,23 +128,21 @@ async def generate_chart(prompt: str) -> tuple[str, str]:
             status_msg = result.output.text or "Chart generated successfully"
 
             # Log the output
-            logger.info(f"Generated chart successfully")
+            logger.info("Generated chart successfully")
             logger.info(f"Status message: {status_msg}")
             logger.info(f"UI element length: {len(ui_element)} characters")
 
             return status_msg, ui_element
-        else:
-            logger.warning("No output received from agent")
-            return "No output received", ""
+        logger.warning("No output received from agent")
+        return "No output received", ""
 
     except Exception as e:
-        logger.error(f"Error generating chart: {str(e)}", exc_info=True)
-        return f"Error: {str(e)}", ""
+        logger.error(f"Error generating chart: {e!s}", exc_info=True)
+        return f"Error: {e!s}", ""
 
 
 async def handle_generate_request(prompt: str) -> dict:
-    """
-    Handle a chart generation request.
+    """Handle a chart generation request.
     Updates both status.json and GeneratedComponent.jsx
     Returns the response dict.
     """
@@ -153,7 +158,7 @@ async def handle_generate_request(prompt: str) -> dict:
         if ui_element:
             update_component(ui_element)
             status = "Rendered Successfully"
-            logger.info(f"Chart component updated successfully")
+            logger.info("Chart component updated successfully")
         else:
             status = "Generation Failed"
             logger.warning("No UI element generated")
@@ -169,8 +174,8 @@ async def handle_generate_request(prompt: str) -> dict:
         return response
 
     except Exception as e:
-        update_status(f"Error: {str(e)}", last_updated)
-        logger.error(f"Request failed: {str(e)}", exc_info=True)
+        update_status(f"Error: {e!s}", last_updated)
+        logger.error(f"Request failed: {e!s}", exc_info=True)
         return {
             "success": False,
             "message": str(e),
@@ -194,10 +199,15 @@ async def health_check():
     return {"status": "ok"}
 
 
+@app.get("/api/status")
+async def get_status():
+    """Get the current generation status."""
+    return current_status
+
+
 @app.post("/api/generate", response_model=GenerateResponse)
 async def generate_chart_endpoint(request: GenerateRequest):
-    """
-    Generate a chart based on the prompt.
+    """Generate a chart based on the prompt.
     """
     result = await handle_generate_request(request.prompt)
     status_code = 200 if result.get("success", False) else 500
