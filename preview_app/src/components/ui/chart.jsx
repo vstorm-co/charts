@@ -6,6 +6,12 @@ import {
   Line as L,
   PieChart as PChart,
   Pie as Pi,
+  AreaChart as AChart,
+  Area as A,
+  RadarChart as RChart,
+  Radar as R,
+  PolarGrid as PG,
+  PolarAngleAxis as PAA,
   Cell as C,
   XAxis as X,
   YAxis as Y,
@@ -15,13 +21,22 @@ import {
   ResponsiveContainer
 } from "recharts"
 
-// 1. Explicitly define and export each component
+// Explicitly define and export each component
 export const BarChart = BChart
 export const Bar = B
 export const LineChart = LChart
 export const Line = L
 export const PieChart = PChart
 export const Pie = Pi
+
+export const AreaChart = AChart
+export const Area = A
+
+export const RadarChart = RChart
+export const Radar = R
+export const PolarGrid = PG
+export const PolarAngleAxis = PAA
+
 export const Cell = C
 export const XAxis = X
 export const YAxis = Y
@@ -29,7 +44,7 @@ export const CartesianGrid = CG
 export const ChartTooltip = T
 export const ChartLegend = Le
 
-// 2. The Container that handles the AI's "config" and CSS variables
+// The Container (No changes needed here, height/width logic remains same)
 export const ChartContainer = ({ config, children, className }) => {
   const style = React.useMemo(() => {
     return Object.entries(config).reduce((acc, [key, value]) => {
@@ -47,7 +62,7 @@ export const ChartContainer = ({ config, children, className }) => {
   )
 }
 
-// 3. Simple placeholders for the Shadcn-specific sub-components
+// Tooltip and Legend Content (No changes needed, Recharts passes payload same way)
 export const ChartTooltipContent = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
@@ -74,7 +89,7 @@ export const ChartTooltipContent = ({ active, payload, label }) => {
 export const ChartLegendContent = ({ payload }) => {
   if (!payload) return null;
   return (
-    <div style={{ display: "flex", justifyContent: "center", gap: "16px", fontSize: "12px" }}>
+    <div style={{ display: "flex", justifyContent: "center", gap: "16px", fontSize: "12px", marginTop: "10px" }}>
       {payload.map((entry, index) => (
         <span key={index} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
           <span style={{ width: "10px", height: "10px", backgroundColor: entry.color, borderRadius: "2px" }} />

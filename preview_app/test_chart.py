@@ -27,8 +27,8 @@ system_prompt = """
 You are assistant in querying and structuring data.
 Use provided tools to perform various tasks.
 Fill in the missing fields where it's necessary or needed.
-Chart should be a pie chart.
-Filling colors are magenta for subscriptions and yellow for revenue.
+Chart has to be be an area chart.
+Filling colors are dark brown for subscriptions and light teal for revenue.
 There should be no legend on the chart.
 """
 

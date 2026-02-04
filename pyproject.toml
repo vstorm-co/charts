@@ -11,6 +11,8 @@ dependencies = [
     "pydantic-ai>=0.1.0",
     "python-dotenv>=1.0.1",
     "jinja2>=3.1.6",
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
 ]
 
 # [project.urls]
@@ -43,6 +45,9 @@ dev = [
     "pyright>=1.1.408",
     "mypy>=1.19.1",
     "icecream>=2.1.10",
+    "hypercorn>=0.17.0",
+    "fastapi>=0.128.0",
+    "uvicorn>=0.40.0",
 ]
 lint = ["ruff>=0.8.0", "pyright>=1.1.400", "mypy>=1.0.0"]
 docs = [

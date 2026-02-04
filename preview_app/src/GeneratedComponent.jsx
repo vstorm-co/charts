@@ -1,26 +1,43 @@
 
 "use client"
-import { Pie, PieChart, ChartTooltip,
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ChartTooltip,
 ChartTooltipContent, ChartLegend, ChartLegendContent, ChartContainer } from "@/components/ui/chart"
 
 const chartConfig = {
-  "category": {
-    "label": "Category"
+  "subscriptions": {
+    "label": "New Subscriptions",
+    "color": "#0000FF"
   },
-  "value": {
-    "label": "Value"
+  "revenue": {
+    "label": "Monthly Revenue",
+    "color": "#FF00FF"
   }
 }
 const chartData = [
   {
-    "category": "Subscriptions",
-    "value": 1224,
-    "fill": "magenta"
+    "month": "Jan",
+    "subscriptions": 120,
+    "revenue": 3200
   },
   {
-    "category": "Revenue",
-    "value": 1861,
-    "fill": "yellow"
+    "month": "Feb",
+    "subscriptions": 150,
+    "revenue": 4100
+  },
+  {
+    "month": "Mar",
+    "subscriptions": 90,
+    "revenue": 2800
+  },
+  {
+    "month": "Apr",
+    "subscriptions": 170,
+    "revenue": 4600
+  },
+  {
+    "month": "May",
+    "subscriptions": 140,
+    "revenue": 3900
   }
 ]
 
@@ -28,11 +45,23 @@ const chartData = [
 export default function GeneratedComponent() {
   return (
     <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
-      <PieChart accessibilityLayer>
-        <Pie data={chartData} dataKey="value" nameKey="category" />
+      <BarChart accessibilityLayer data={chartData}>
+        <CartesianGrid vertical={false} />
+        <XAxis
+            dataKey="month"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={10}
+        />
+        <YAxis tickLine={false} axisLine={false} />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
-      </PieChart>
+
+        <Bar dataKey="subscriptions" fill="var(--color-subscriptions)" radius={4} />
+
+        <Bar dataKey="revenue" fill="var(--color-revenue)" radius={4} />
+
+      </BarChart>
     </ChartContainer>
   )
 }
