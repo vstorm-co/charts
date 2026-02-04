@@ -14,10 +14,10 @@ dependencies = [
 ]
 
 # [project.urls]
-# Homepage = "https://github.com/vstorm-co/sql-toolset-pydantic-ai"
-# Documentation = "https://github.com/vstorm-co/sql-toolset-pydantic-ai"
-# Repository = "https://github.com/vstorm-co/sql-toolset-pydantic-ai"
-# Issues = "https://github.com/vstorm-co/sql-toolset-pydantic-ai/issues"
+# Homepage = "https://github.com/vstorm-co/charts"
+# Documentation = "https://github.com/vstorm-co/charts"
+# Repository = "https://github.com/vstorm-co/charts"
+# Issues = "https://github.com/vstorm-co/charts/issues"
 
 [build-system]
 requires = ["hatchling"]
