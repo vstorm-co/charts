@@ -80,6 +80,7 @@ max-complexity = 15
 
 [tool.ruff.format]
 quote-style = "double"
+line-ending = "auto"
 
 # Pytest configuration
 [tool.pytest.ini_options]

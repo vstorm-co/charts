@@ -1,5 +1,4 @@
-"""
-Agentic charts package for PydanticAI.
+"""Agentic charts package for PydanticAI.
 
 #TODO fill description and examples
 """
@@ -8,7 +7,7 @@ Agentic charts package for PydanticAI.
 from importlib.metadata import version
 
 from charts.base_types import BaseComponent, CustomType
-from charts.types.chart import Chart, ChartConfig, ChartData, ChartToolOutput
+from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartToolOutput
 
 __all__ = [
     # Base types

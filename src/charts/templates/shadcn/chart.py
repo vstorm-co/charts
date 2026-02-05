@@ -3,7 +3,9 @@ from jinja2 import Template
 SHADCN_BAR_CHART_TEMPLATE = Template("""
 "use client"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ChartTooltip,
-ChartTooltipContent, ChartLegend, ChartLegendContent, ChartContainer, Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/chart"
+ChartTooltipContent, ChartLegend, ChartLegendContent, ChartContainer,
+Card, CardContent, CardHeader, CardTitle, CardDescription
+} from "@/components/ui/chart"
 
 const chartConfig = {{ chart_config_json }}
 const chartData = {{ chart_data_json }}
@@ -43,7 +45,9 @@ export default function GeneratedComponent() {
 SHADCN_PIE_CHART_TEMPLATE = Template("""
 "use client"
 import { Pie, PieChart, ChartTooltip,
-ChartTooltipContent, ChartLegend, ChartLegendContent, ChartContainer, Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/chart"
+ChartTooltipContent, ChartLegend, ChartLegendContent, ChartContainer,
+Card, CardContent, CardHeader, CardTitle, CardDescription
+} from "@/components/ui/chart"
 
 const chartConfig = {{ chart_config_json }}
 const chartData = {{ chart_data_json }}
@@ -73,7 +77,9 @@ export default function GeneratedComponent() {
 SHADCN_LINE_CHART_TEMPLATE = Template("""
 "use client"
 import { Line, LineChart, CartesianGrid, XAxis, YAxis, ChartTooltip,
-ChartTooltipContent, ChartLegend, ChartLegendContent, ChartContainer, Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/chart"
+ChartTooltipContent, ChartLegend, ChartLegendContent, ChartContainer,
+Card, CardContent, CardHeader, CardTitle, CardDescription
+} from "@/components/ui/chart"
 
 const chartConfig = {{ chart_config_json }}
 const chartData = {{ chart_data_json }}
@@ -94,7 +100,8 @@ export default function GeneratedComponent() {
           <LineChart
             accessibilityLayer
             data={chartData}
-            margin={{ left_brace }}{{ left_brace }} left: 12, right: 12 {{ right_brace }}{{ right_brace }}
+            margin={{ left_brace }}{{ left_brace }} left: 12,
+            right: 12 {{ right_brace }}{{ right_brace }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
@@ -127,7 +134,9 @@ export default function GeneratedComponent() {
 SHADCN_RADAR_CHART_TEMPLATE = Template("""
 "use client"
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, ChartTooltip,
-ChartTooltipContent, ChartLegend, ChartLegendContent, ChartContainer, Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/chart"
+ChartTooltipContent, ChartLegend, ChartLegendContent, ChartContainer,
+Card, CardContent, CardHeader, CardTitle, CardDescription
+} from "@/components/ui/chart"
 
 const chartConfig = {{ chart_config_json }}
 const chartData = {{ chart_data_json }}
@@ -172,8 +181,10 @@ export default function GeneratedComponent() {
 
 SHADCN_AREA_CHART_TEMPLATE = Template("""
 "use client"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ChartTooltip,
-ChartTooltipContent, ChartLegend, ChartLegendContent, ChartContainer, Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/chart"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis,
+ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent,
+ChartContainer, Card, CardContent, CardHeader, CardTitle, CardDescription
+} from "@/components/ui/chart"
 
 const chartConfig = {{ chart_config_json }}
 const chartData = {{ chart_data_json }}

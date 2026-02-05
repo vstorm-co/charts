@@ -1,21 +1,24 @@
 import json
+import re
 from enum import Enum
 from typing import Any, Literal
 
 from pydantic import Field, field_validator, model_validator
 from typing_extensions import Self
 
-from charts.base_types import BaseComponent, CustomType
+from charts.base_types import BaseComponent, BaseToolOutput, CustomType
 from charts.templates.shadcn.chart import (
-    SHADCN_BAR_CHART_TEMPLATE,
-    SHADCN_PIE_CHART_TEMPLATE,
-    SHADCN_LINE_CHART_TEMPLATE,
-    SHADCN_RADAR_CHART_TEMPLATE,
     SHADCN_AREA_CHART_TEMPLATE,
+    SHADCN_BAR_CHART_TEMPLATE,
+    SHADCN_LINE_CHART_TEMPLATE,
+    SHADCN_PIE_CHART_TEMPLATE,
+    SHADCN_RADAR_CHART_TEMPLATE,
 )
 
 
 class ChartTypes(str, Enum):
+    """Types of available charts."""
+
     bar = "bar"
     line = "line"
     pie = "pie"
@@ -24,8 +27,8 @@ class ChartTypes(str, Enum):
 
 
 class ChartMetadata(CustomType):
-    """
-    Metadata for given chart, containing elements like title, subtitle, description and others.
+    """Metadata for given chart, containing elements like title,
+    subtitle, description and others.
     """
 
     title: str | None = None
@@ -34,8 +37,7 @@ class ChartMetadata(CustomType):
 
 
 class ChartConfig(CustomType):
-    """
-    Config for a chart. Maps data keys to labels and colors.
+    """Config for a chart. Maps data keys to labels and colors.
 
     Example for bar chart: {"desktop": {"label": "Desktop", "color": "#2563eb"}}
 
@@ -46,15 +48,18 @@ class ChartConfig(CustomType):
 
     Example for radar chart: { "desktop": { "label": "Desktop", "color": "var(--chart-1)"}
 
-    Example for area chart: {visitors: {label: "Visitors",}, desktop: { label: "Desktop", color: "var(--chart-1)",}}
+    Example for area chart:
+    {
+        visitors: {label: "Visitors",},
+        desktop: { label: "Desktop", color: "var(--chart-1)",}
+    }
     """
 
     config: dict[str, dict[str, str]]
 
 
 class ChartData(CustomType):
-    """
-    The actual data points for the chart.
+    """The actual data points for the chart.
 
     Example for bar chart: [{"month": "Jan", "desktop": 100}, {"month": "Feb", "desktop": 120}]
 
@@ -69,6 +74,8 @@ class ChartData(CustomType):
 
 
 class Chart(BaseComponent):
+    """Basic object to store various charts for component rendering."""
+
     # Main elements
     component_type: Literal["chart"] = "chart"
     chart_type: ChartTypes
@@ -86,31 +93,19 @@ class Chart(BaseComponent):
     @field_validator("x_axis_key")
     @classmethod
     def validate_x_axis_key(cls, v: str, info: Any) -> str:
-        """Validate that x_axis_key exists in chart_data keys"""
-        if "data" in info.data and info.data["data"]:
+        """Validate that x_axis_key exists in chart_data keys."""
+        if info.data.get("data"):
             data_keys = info.data["data"][0].keys()
             if v not in data_keys:
                 raise ValueError(
-                    f"x_axis_key '{v}' must be one of the data keys: {list(data_keys)}"
+                    f"x_axis_key '{v}' must be one of the data keys: {list(data_keys)}",
                 )
         return v
 
 
-class ChartToolOutput(CustomType):
-    text: str | None = None
-    message: str | None = None
-    ui: list[Chart]
-    data: dict[str, Any] | None = None
+class ChartToolOutput(BaseToolOutput):
+    """An output of Agentic component workflow creation."""
 
-    @field_validator("ui", mode="before")
-    @classmethod
-    def wrap_in_list(cls, v: Chart | list[Chart]) -> list[Chart] | Any:
-        if isinstance(v, Chart):
-            return [v]
-        return v
-
-
-class ChartToolOutputV2(CustomType):
     text: str | None = None
     message: str | None = None
     ui: list[Chart]
@@ -119,13 +114,15 @@ class ChartToolOutputV2(CustomType):
 
     @field_validator("ui", mode="before")
     @classmethod
-    def wrap_in_list(cls, v: Chart | list[Chart]) -> list[Chart] | Any:
+    def wrap_in_list(cls, v: Chart | list[Chart]) -> list[Chart]:
+        """Wrap items in a list object."""
         if isinstance(v, Chart):
             return [v]
         return v
 
     @model_validator(mode="after")
     def build_ui_element(self) -> Self:
+        """Create a formatted UI element based on provided template."""
         if not self.ui:
             self.ui_element = ""  # Or a placeholder component string
             return self
@@ -144,7 +141,8 @@ class ChartToolOutputV2(CustomType):
         elif chart.chart_type == "area":
             template = SHADCN_AREA_CHART_TEMPLATE
         else:
-            raise KeyError("Unknown chart type")
+            msg = "Unknown chart type"
+            raise KeyError(msg)
 
         # Get the keys from the config (e.g., ['subscriptions', 'revenue'])
         data_keys = list(chart.chart_config.config.keys())
@@ -165,9 +163,12 @@ class ChartToolOutputV2(CustomType):
 
         # Sanitize component name for the internal function
         # Remove non-alphanumeric characters and fall back to a default
-        import re
 
-        raw_name = (chart.metadata.title or "GeneratedChart") if getattr(chart, "metadata", None) else "GeneratedChart"
+        raw_name = (
+            (chart.metadata.title or "GeneratedChart")
+            if getattr(chart, "metadata", None)
+            else "GeneratedChart"
+        )
         safe_name = re.sub(r"[^0-9A-Za-z_]", "", raw_name.replace(" ", "")) or "GeneratedChart"
 
         # 3. Render the template

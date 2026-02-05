@@ -61,11 +61,11 @@ export const ChartContainer = ({ config = {}, children, className = "" }) => {
   }, [config]);
 
   return (
-    <div 
-      className={className} 
-      style={{ 
-        ...style, 
-        width: "100%", 
+    <div
+      className={className}
+      style={{
+        ...style,
+        width: "100%",
         height: "350px", // Added a default height
         minHeight: "300px", // Ensures it respects your template's intent
         position: "relative" // Helps Recharts calculate dimensions

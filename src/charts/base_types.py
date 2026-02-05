@@ -4,8 +4,7 @@ from pydantic import BaseModel, ConfigDict
 
 
 class CustomType(BaseModel):
-    """
-    Base class for custom Pydantic models in the sql-toolset-pydantic-ai library.
+    """Base class for custom Pydantic models in the sql-toolset-pydantic-ai library.
 
     This class provides a common configuration for all custom models in the library,
     allowing arbitrary types to be used in Pydantic models.
@@ -15,36 +14,25 @@ class CustomType(BaseModel):
 
 
 class BaseComponent(CustomType):
-    """Base class for all UI components"""
+    """Base class for all UI components."""
 
-    component_type: Literal["chart", "table"]
+    component_type: str
+
+
+class BaseToolOutput(CustomType):
+    """Base class for all tool output data from Agents."""
+
+    text: str | None = None
+    message: str | None = None
+    ui: list[BaseComponent]
+    ui_element: str
+    data: dict[str, Any] | None = None
 
 
 # TODO switch to default chart component?
 class TableComponent(BaseComponent):
-    """Standard table fallback if a chart isn't appropriate"""
+    """Standard table fallback if a chart isn't appropriate."""
 
     component_type: Literal["table"] = "table"
     headers: list[str]
     rows: list[dict[str, Any]]
-
-
-# class ToolOutput(CustomType):
-#     text: str
-#     message: str | None
-#     ui: BaseComponent | list[BaseComponent]
-#     data: Any = None
-
-#     @field_validator("ui")
-#     @classmethod
-#     def validate_ui(
-#         cls, v: BaseComponent | list[BaseComponent]
-#     ) -> BaseComponent | list[BaseComponent]:
-#         """Validate that ui contains only valid component types"""
-#         if isinstance(v, list):
-#             for item in v:
-#                 if not isinstance(item, BaseComponent):
-#                     raise ValueError(
-#                         f"UI list can only contain BaseComponent instances, got {type(item)}"
-#                     )
-#         return v

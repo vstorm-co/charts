@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from icecream import ic
 from pydantic_ai import Agent, RunContext
 
-from charts.types.chart import Chart, ChartConfig, ChartData, ChartToolOutputV2
+from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartToolOutput
 
 config_instance = {
     "subscriptions": {"label": "New Subscriptions", "color": "#2563eb"},
@@ -40,17 +40,17 @@ agent = Agent("openai:gpt-5.1", output_type=Chart, system_prompt=system_prompt)
 
 @agent.tool
 async def query(ctx: RunContext) -> ChartData:
-    """Query to get the relevant data"""
+    """Query to get the relevant data."""
     return ChartData(data=data)
 
 
 @agent.tool
 async def config(ctx: RunContext) -> ChartConfig:
-    """Get the configuration for the plot"""
+    """Get the configuration for the plot."""
     return ChartConfig(config=config_instance)
 
 
-async def send_component(result: ChartToolOutputV2) -> None:
+async def send_component(result: ChartToolOutput) -> None:
     ui_element = result.ui_element
 
     with open("preview_app/src/GeneratedComponent.jsx", "w") as f:
@@ -79,7 +79,7 @@ async def main() -> None:
     await initialize()
     result = await agent.run(
         "Query the data and the config, return values needed to create the chart.",
-        output_type=ChartToolOutputV2,
+        output_type=ChartToolOutput,
     )
 
     if result:

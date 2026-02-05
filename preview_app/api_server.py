@@ -1,5 +1,5 @@
 """API Server for the preview app.
-Handles chart generation requests from the frontend.
+Handles component generation requests from the frontend.
 
 To run:
     uvicorn api_server:app --host 127.0.0.1 --port 8000 --reload
@@ -10,13 +10,23 @@ import logging
 import os
 import sys
 import time
+import uuid
 from pathlib import Path
+from typing import Any
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
+
+from charts.types.shadcn.accordion import (
+    Accordion,
+    AccordionList,
+    AccordionToolOutput,
+    AccordionTypes,
+)
+from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartToolOutput
 
 # Configure logging
 logging.basicConfig(
@@ -30,11 +40,19 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from charts.types.chart import Chart, ChartConfig, ChartData, ChartToolOutputV2
-
 load_dotenv(override=True)
 
 app = FastAPI(title="Chart Generation API", version="0.0.1")
+
+COMPONENT_SCHEMAS = {
+    "chart": Chart.model_json_schema(),
+    "accordion": AccordionList.model_json_schema(),
+    "accordion_list": AccordionList.model_json_schema(),
+}
+
+COMPONENT_LIST = list(COMPONENT_SCHEMAS.keys())
+
+ComponentOutput = AccordionToolOutput | ChartToolOutput
 
 
 # Pydantic models for request/response validation
@@ -67,14 +85,52 @@ data = [
 current_status = {"status": "Waiting...", "lastUpdated": "Never"}
 
 system_prompt = """
-You are an assistant in querying and structuring data.
-Use provided tools to perform various tasks.
+You are an assistant for frontend component creation.
+If needed, you will query and structure the data.
+Use provided tools proactively to perform various tasks.
 Fill in the missing fields where it's necessary or needed.
-Create appropriate charts based on the user's request.
-Use the provided data and configuration to generate meaningful visualizations.
+Create appropriate components based on the user's request.
 """
 
-agent = Agent("openai:gpt-5.1", output_type=Chart, system_prompt=system_prompt)
+agent = Agent("openai:gpt-5.1", system_prompt=system_prompt)
+
+
+@agent.tool
+async def available_components(ctx: RunContext) -> list[str]:
+    """Choose component relevant to the User's query"""
+    return COMPONENT_LIST
+
+
+@agent.tool
+async def get_component_schema(ctx: RunContext, component_name: str) -> dict[str, Any]:
+    """Get component's schema based on the component's type"""
+    # Normalize naming: common LLM behavior is to use underscores
+    normalized_name = component_name.lower().replace(" ", "_")
+
+    if normalized_name in COMPONENT_SCHEMAS:
+        return COMPONENT_SCHEMAS[normalized_name]
+
+    # Returning this helps the LLM realize it made a typo
+    return {
+        "error": f"Component '{component_name}' not found.",
+        "available_components": COMPONENT_LIST,
+    }
+
+
+@agent.tool
+async def create_accordion(ctx: RunContext, header: str, content: str) -> Accordion:
+    """Create an Accordion component with header and content"""
+    return Accordion(value=str(uuid.uuid4()), trigger=header, content=content)
+
+
+@agent.tool
+async def merge_accordions(
+    ctx: RunContext,
+    accordions: list[Accordion],
+    list_type: AccordionTypes,
+) -> AccordionList:
+    """Generate a list of Accordion components with"""
+    return AccordionList(items=accordions, list_type=list_type)
 
 
 @agent.tool
@@ -111,8 +167,8 @@ def update_component(ui_element: str) -> None:
         f.write(ui_element)
 
 
-async def generate_chart(prompt: str) -> tuple[str, str]:
-    """Generate a chart based on the prompt.
+async def generate_component(prompt: str) -> tuple[str, str]:
+    """Generate a component based on the prompt.
     Returns (status_message, ui_element)
     """
     logger.info(f"Received prompt: {prompt[:100]}{'...' if len(prompt) > 100 else ''}")
@@ -120,15 +176,16 @@ async def generate_chart(prompt: str) -> tuple[str, str]:
     try:
         result = await agent.run(
             prompt,
-            output_type=ChartToolOutputV2,
+            output_type=ComponentOutput,
         )
 
         if result and result.output:
+            print(result.output)
             ui_element = result.output.ui_element or ""
-            status_msg = result.output.text or "Chart generated successfully"
+            status_msg = result.output.text or "Component generated successfully"
 
             # Log the output
-            logger.info("Generated chart successfully")
+            logger.info("Generated component successfully")
             logger.info(f"Status message: {status_msg}")
             logger.info(f"UI element length: {len(ui_element)} characters")
 
@@ -137,12 +194,12 @@ async def generate_chart(prompt: str) -> tuple[str, str]:
         return "No output received", ""
 
     except Exception as e:
-        logger.error(f"Error generating chart: {e!s}", exc_info=True)
+        logger.error(f"Error generating component: {e!s}", exc_info=True)
         return f"Error: {e!s}", ""
 
 
 async def handle_generate_request(prompt: str) -> dict:
-    """Handle a chart generation request.
+    """Handle a component generation request.
     Updates both status.json and GeneratedComponent.jsx
     Returns the response dict.
     """
@@ -153,12 +210,12 @@ async def handle_generate_request(prompt: str) -> dict:
     update_status("Generating...", last_updated)
 
     try:
-        status_msg, ui_element = await generate_chart(prompt)
+        status_msg, ui_element = await generate_component(prompt)
 
         if ui_element:
             update_component(ui_element)
             status = "Rendered Successfully"
-            logger.info("Chart component updated successfully")
+            logger.info("Component updated successfully")
         else:
             status = "Generation Failed"
             logger.warning("No UI element generated")
@@ -206,11 +263,9 @@ async def get_status():
 
 
 @app.post("/api/generate", response_model=GenerateResponse)
-async def generate_chart_endpoint(request: GenerateRequest):
-    """Generate a chart based on the prompt.
-    """
+async def generate_component_endpoint(request: GenerateRequest):
+    """Generate a component based on the prompt."""
     result = await handle_generate_request(request.prompt)
-    status_code = 200 if result.get("success", False) else 500
     return result
 
 
