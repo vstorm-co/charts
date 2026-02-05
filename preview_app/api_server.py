@@ -20,12 +20,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
 
+from charts.base_types import BaseComponent
 from charts.types.shadcn.accordion import (
     Accordion,
     AccordionList,
     AccordionToolOutput,
     AccordionTypes,
 )
+from charts.types.shadcn.card import Card, CardOutputTool
 from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartToolOutput
 
 # Configure logging
@@ -48,11 +50,12 @@ COMPONENT_SCHEMAS = {
     "chart": Chart.model_json_schema(),
     "accordion": AccordionList.model_json_schema(),
     "accordion_list": AccordionList.model_json_schema(),
+    "card": Card.model_json_schema(),
 }
 
 COMPONENT_LIST = list(COMPONENT_SCHEMAS.keys())
 
-ComponentOutput = AccordionToolOutput | ChartToolOutput
+ComponentOutput = AccordionToolOutput | ChartToolOutput | CardOutputTool
 
 
 # Pydantic models for request/response validation
@@ -95,6 +98,7 @@ Create appropriate components based on the user's request.
 agent = Agent("openai:gpt-5.1", system_prompt=system_prompt)
 
 
+### Main tools
 @agent.tool
 async def available_components(ctx: RunContext) -> list[str]:
     """Choose component relevant to the User's query"""
@@ -117,6 +121,20 @@ async def get_component_schema(ctx: RunContext, component_name: str) -> dict[str
     }
 
 
+### Card
+@agent.tool
+async def create_card(
+    ctx: RunContext,
+    title: str,
+    description: str,
+    content: str | BaseComponent | list[BaseComponent],
+    footer: str,
+) -> Card:
+    """Create a Card component with given data."""
+    return Card(title=title, description=description, content=content, footer=footer)
+
+
+### Accordion
 @agent.tool
 async def create_accordion(ctx: RunContext, header: str, content: str) -> Accordion:
     """Create an Accordion component with header and content"""
@@ -133,6 +151,7 @@ async def merge_accordions(
     return AccordionList(items=accordions, list_type=list_type)
 
 
+### Charts
 @agent.tool
 async def query(ctx: RunContext) -> ChartData:
     """Query to get the relevant data"""
@@ -145,6 +164,7 @@ async def config(ctx: RunContext) -> ChartConfig:
     return ChartConfig(config=config_instance)
 
 
+### MEthods
 def update_status(status: str, last_updated: str) -> None:
     """Update the status.json file and global state."""
     # Update in-memory state
