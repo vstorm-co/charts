@@ -79,10 +79,11 @@ The API server will be available at `http://localhost:8000`.
 3. Click "Generate" and watch the chart update in real-time
 
 The status panel will show:
+
 - **Status**: "Waiting...", "Generating...", "Rendered Successfully", or error state
 - **Last Update**: Timestamp of the last generation
 
-The generated chart component is written to `preview_app/src/GeneratedComponent.jsx` and hot-reloaded in the browser.
+The generated chart component is written to `preview_app/src/GeneratedComponent.tsx` and hot-reloaded in the browser.
 
 ## Project Structure
 
@@ -94,7 +95,7 @@ preview_app/
 │   ├── components/ui/   # Recharts wrapper components
 │   │   └── chart.jsx    # Bar, Pie, Line chart wrappers
 │   ├── App.jsx          # Main app with status display and prompt input
-│   ├── GeneratedComponent.jsx  # AI-generated code (auto-updated)
+│   ├── GeneratedComponent.tsx  # AI-generated code (auto-updated)
 │   └── status.json      # Generation status metadata
 ├── index.html           # HTML entry point
 ├── package.json         # Node.js dependencies
@@ -103,7 +104,7 @@ preview_app/
 
 ## Development Workflow
 
-1. **Start the dev server**: `npm run dev` (frontend at http://localhost:5173)
+1. **Start the dev server**: `npm run dev` (frontend at <http://localhost:5173>)
 2. **Start the API server**: `uvicorn api_server:app --host 127.0.0.1 --port 8000 --reload`
 3. **Generate charts**: Use the prompt input in the browser to generate charts
 4. **Modify data**: Edit `api_server.py` to change the data and configuration
@@ -134,21 +135,25 @@ Response:
 ## Status Panel
 
 The app displays a status panel showing:
+
 - **Status**: "Waiting...", "Generating...", "Rendered Successfully", or error state
 - **Last Update**: Timestamp of the last generation
 
 ## Troubleshooting
 
 ### Component doesn't reload after running script
-- Check that `GeneratedComponent.jsx` was written successfully
+
+- Check that `GeneratedComponent.tsx` was written successfully
 - Verify Vite is running (check terminal output)
 - Try manual refresh: `Cmd+R` (Mac) or `Ctrl+R` (Windows)
 
 ### Python errors
+
 - Ensure `uv sync` was run in the root directory
 - Check that `OPENAI_API_KEY` is set in `.env`
 - Verify Python version >= 3.10
 
 ### Chart doesn't render
+
 - Check browser console for syntax errors in generated code
 - Ensure chart data matches the expected format (see `preview_app/test_chart.py`)

@@ -160,8 +160,8 @@ def update_status(status: str, last_updated: str) -> None:
 
 
 def update_component(ui_element: str) -> None:
-    """Update the GeneratedComponent.jsx file."""
-    component_path = Path(__file__).parent / "src" / "GeneratedComponent.jsx"
+    """Update the GeneratedComponent.tsx file."""
+    component_path = Path(__file__).parent / "src" / "GeneratedComponent.tsx"
     os.makedirs(component_path.parent, exist_ok=True)
     with open(component_path, "w") as f:
         f.write(ui_element)
@@ -200,7 +200,7 @@ async def generate_component(prompt: str) -> tuple[str, str]:
 
 async def handle_generate_request(prompt: str) -> dict:
     """Handle a component generation request.
-    Updates both status.json and GeneratedComponent.jsx
+    Updates both status.json and GeneratedComponent.tsx
     Returns the response dict.
     """
     last_updated = time.strftime("%H:%M:%S")

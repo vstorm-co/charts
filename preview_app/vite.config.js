@@ -13,11 +13,28 @@ export default defineConfig({
     },
   },
   server: {
+    // Helps with "access control checks" by ensuring the dev server
+    // can access the project root correctly
+    fs: {
+      allow: ['..'],
+    },
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
       },
+    },
+  },
+  // This section prevents Vite from trying to process source maps for
+  // dependencies that might have broken or inaccessible pointers
+  build: {
+    sourcemap: false,
+  },
+  // Specifically ignores source map processing during development
+  // for the pre-bundled dependencies seen in your error log
+  optimizeDeps: {
+    esbuildOptions: {
+      sourcemap: false,
     },
   },
 })

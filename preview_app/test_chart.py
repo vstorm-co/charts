@@ -53,7 +53,7 @@ async def config(ctx: RunContext) -> ChartConfig:
 async def send_component(result: ChartToolOutput) -> None:
     ui_element = result.ui_element
 
-    with open("preview_app/src/GeneratedComponent.jsx", "w") as f:
+    with open("preview_app/src/GeneratedComponent.tsx", "w") as f:
         f.write(ui_element)
 
     with open("preview_app/src/status.json", "w") as f:
@@ -65,8 +65,8 @@ async def initialize():
     os.makedirs("src", exist_ok=True)
 
     # Create placeholder component if it doesn't exist
-    if not os.path.exists("src/GeneratedComponent.jsx"):
-        with open("preview_app/src/GeneratedComponent.jsx", "w") as f:
+    if not os.path.exists("src/GeneratedComponent.tsx"):
+        with open("preview_app/src/GeneratedComponent.tsx", "w") as f:
             f.write("export default function GeneratedUI() { return <div>Waiting for AI...</div> }")
 
     # Create placeholder status
