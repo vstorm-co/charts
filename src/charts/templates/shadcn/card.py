@@ -3,7 +3,7 @@ from jinja2 import Template
 SHADCN_CARD_TEMPLATE = Template("""
 "use client"
 
-import * as React from "react"
+
 import {
   Card,
   CardContent,

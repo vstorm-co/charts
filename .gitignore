@@ -209,3 +209,6 @@ __marimo__/
 # Custom
 playground/
 .vscode
+package-lock.json
+GeneratedComponent.tsx
+status.json

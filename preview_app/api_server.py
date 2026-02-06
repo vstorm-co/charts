@@ -28,6 +28,7 @@ from charts.types.shadcn.accordion import (
     AccordionTypes,
 )
 from charts.types.shadcn.card import Card, CardOutputTool
+from charts.types.shadcn.carousel import Carousel, CarouselConfig, CarouselItem, CarouselOrientation, CarouselToolOutput
 from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartToolOutput
 
 # Configure logging
@@ -51,11 +52,13 @@ COMPONENT_SCHEMAS = {
     "accordion": AccordionList.model_json_schema(),
     "accordion_list": AccordionList.model_json_schema(),
     "card": Card.model_json_schema(),
+    "carousel_item": CarouselItem.model_json_schema(),
+    "carousel": Carousel.model_json_schema()
 }
 
 COMPONENT_LIST = list(COMPONENT_SCHEMAS.keys())
 
-ComponentOutput = AccordionToolOutput | ChartToolOutput | CardOutputTool
+ComponentOutput = AccordionToolOutput | ChartToolOutput | CardOutputTool | CarouselToolOutput
 
 
 # Pydantic models for request/response validation
@@ -151,20 +154,37 @@ async def merge_accordions(
     return AccordionList(items=accordions, list_type=list_type)
 
 
+### Carousel
+@agent.tool
+async def create_carousel_item(ctx: RunContext, content: str | BaseComponent) -> CarouselItem:
+    """Generate a CarouselItem for further usage in Carousel component"""
+    return CarouselItem(content=content)
+
+@agent.tool
+async def create_carousel_config(ctx: RunContext, orientation: CarouselOrientation) -> CarouselConfig:
+    """Create a CarouselConfig item to determine the behavior of final component."""
+    return CarouselConfig(orientation=orientation)
+    
+@agent.tool
+async def create_complete_carousel(ctx: RunContext, items: list[CarouselItem], config: CarouselConfig) -> Carousel:
+    """Create a complete Carousel component with items and config."""
+    return Carousel(items=items, config=config)
+
+
 ### Charts
 @agent.tool
-async def query(ctx: RunContext) -> ChartData:
-    """Query to get the relevant data"""
+async def query_for_chart(ctx: RunContext) -> ChartData:
+    """Query to get the relevant data for chart creation."""
     return ChartData(data=data)
 
 
 @agent.tool
-async def config(ctx: RunContext) -> ChartConfig:
-    """Get the configuration for the plot"""
+async def get_chart_config(ctx: RunContext) -> ChartConfig:
+    """Get the configuration for the chart."""
     return ChartConfig(config=config_instance)
 
 
-### MEthods
+### Methods
 def update_status(status: str, last_updated: str) -> None:
     """Update the status.json file and global state."""
     # Update in-memory state
