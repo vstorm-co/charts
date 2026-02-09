@@ -16,11 +16,11 @@ const items = {{ items_json }}
 
 export default function GeneratedCarousel() {
   return (
-    <Carousel 
-      opts={ { 
-      align: "{{ align | default('start') }}", 
+    <Carousel
+      opts={ {
+      align: "{{ align | default('start') }}",
       loop: {{ loop | default('true') }}
-      } } 
+      } }
       orientation="{{ orientation | default('horizontal') }}"
       {# Vertical carousels in Shadcn require a container height #}
       className="w-full {{ container_class | default('max-w-xs') }} {% if orientation == 'vertical' %}h-[400px]{% endif %}"

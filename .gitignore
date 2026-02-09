@@ -212,3 +212,4 @@ playground/
 package-lock.json
 GeneratedComponent.tsx
 status.json
+.DS_Store

@@ -6,7 +6,6 @@ To run:
 """
 
 import json
-import logging
 import os
 import sys
 import time
@@ -17,6 +16,7 @@ from typing import Any
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
 
@@ -28,16 +28,15 @@ from charts.types.shadcn.accordion import (
     AccordionTypes,
 )
 from charts.types.shadcn.card import Card, CardOutputTool
-from charts.types.shadcn.carousel import Carousel, CarouselConfig, CarouselItem, CarouselOrientation, CarouselToolOutput
-from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartToolOutput
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
+from charts.types.shadcn.carousel import (
+    Carousel,
+    CarouselConfig,
+    CarouselItem,
+    CarouselOrientation,
+    CarouselToolOutput,
 )
-logger = logging.getLogger(__name__)
+from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartMetadata, ChartToolOutput, ChartTypes
+from charts.types.shadcn.table import Table, TableData, TableFooter, TableOutputTool
 
 # Add the project root to the path for imports
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -53,12 +52,15 @@ COMPONENT_SCHEMAS = {
     "accordion_list": AccordionList.model_json_schema(),
     "card": Card.model_json_schema(),
     "carousel_item": CarouselItem.model_json_schema(),
-    "carousel": Carousel.model_json_schema()
+    "carousel": Carousel.model_json_schema(),
+    "table": Table.model_json_schema(),
 }
 
 COMPONENT_LIST = list(COMPONENT_SCHEMAS.keys())
 
-ComponentOutput = AccordionToolOutput | ChartToolOutput | CardOutputTool | CarouselToolOutput
+ComponentOutput = (
+    AccordionToolOutput | ChartToolOutput | CardOutputTool | CarouselToolOutput | TableOutputTool
+)
 
 
 # Pydantic models for request/response validation
@@ -72,7 +74,7 @@ class GenerateResponse(BaseModel):
     lastUpdated: str
 
 
-# Data for the tools
+# Data for the chart tools
 config_instance = {
     "subscriptions": {"label": "New Subscriptions", "color": "#2563eb"},
     "revenue": {"label": "Monthly Revenue", "color": "#10b981"},
@@ -87,18 +89,35 @@ data = [
     {"month": "June", "subscriptions": 214, "revenue": 610},
 ]
 
+# Data for the table tools
+headers = ["month", "subscriptions", "revenue"]
+rows = [
+    ("January", 186, 450),
+    ("February", 305, 52),
+    ("March", 237, 480),
+    ("April", 73, 210),
+    ("May", 209, 59),
+    ("June", 214, 610),
+]
+
 # Global status storage
 current_status = {"status": "Waiting...", "lastUpdated": "Never"}
 
 system_prompt = """
 You are an assistant for frontend component creation.
-If needed, you will query and structure the data.
-Use provided tools proactively to perform various tasks.
+You will query for needed data and structure the final component as per user's request.
+
+Split user requests into smaller steps and use the provided tools to complete those steps.
+Use provided tools proactively to perform tasks.
 Fill in the missing fields where it's necessary or needed.
-Create appropriate components based on the user's request.
+Do not hesitate to ask for more data if you think it's necessary for the final component.
+
+You must always finish by calling a ToolOutput function
+(CardOutputTool, TableOutputTool, ChartToolOutput, etc.) that produces the final UI element.
+Do not end without returning a final output.
 """
 
-agent = Agent("openai:gpt-5.1", system_prompt=system_prompt)
+agent = Agent("openai:gpt-5.1", system_prompt=system_prompt, retries=3)
 
 
 ### Main tools
@@ -137,6 +156,12 @@ async def create_card(
     return Card(title=title, description=description, content=content, footer=footer)
 
 
+@agent.tool
+async def finalize_card_creation(ctx: RunContext, ui: Card) -> CardOutputTool:
+    """Finalize the creation of the card component by wrapping it in the output tool."""
+    return CardOutputTool(ui=ui, ui_element="")
+
+
 ### Accordion
 @agent.tool
 async def create_accordion(ctx: RunContext, header: str, content: str) -> Accordion:
@@ -154,34 +179,87 @@ async def merge_accordions(
     return AccordionList(items=accordions, list_type=list_type)
 
 
+@agent.tool
+async def finalize_accordion_creation(ctx: RunContext, ui: AccordionList) -> AccordionToolOutput:
+    """Finalize the creation of the accordion component by wrapping it in the output tool."""
+    return AccordionToolOutput(ui=ui, ui_element="")
+
+
 ### Carousel
 @agent.tool
 async def create_carousel_item(ctx: RunContext, content: str | BaseComponent) -> CarouselItem:
     """Generate a CarouselItem for further usage in Carousel component"""
     return CarouselItem(content=content)
 
+
 @agent.tool
-async def create_carousel_config(ctx: RunContext, orientation: CarouselOrientation) -> CarouselConfig:
+async def create_carousel_config(
+    ctx: RunContext, orientation: CarouselOrientation,
+) -> CarouselConfig:
     """Create a CarouselConfig item to determine the behavior of final component."""
     return CarouselConfig(orientation=orientation)
-    
+
+
 @agent.tool
-async def create_complete_carousel(ctx: RunContext, items: list[CarouselItem], config: CarouselConfig) -> Carousel:
+async def create_complete_carousel(
+    ctx: RunContext, items: list[CarouselItem], config: CarouselConfig,
+) -> Carousel:
     """Create a complete Carousel component with items and config."""
     return Carousel(items=items, config=config)
+
+@agent.tool
+async def finalize_carousel_creation(ctx: RunContext, ui: Carousel) -> CarouselToolOutput:
+    """Finalize the creation of the carousel component by wrapping it in the output tool."""
+    return CarouselToolOutput(ui=ui, ui_element="")
+
+
+# Table
+@agent.tool
+async def query_for_table_data(ctx: RunContext) -> TableData:
+    """Query for data that will be used to create the table."""
+    return TableData(headers=headers, rows=rows)
+
+@agent.tool
+async def create_table(
+    ctx: RunContext,
+    table_data: TableData,
+    caption: str | None = None,
+    footer: TableFooter | None = None,
+) -> Table:
+    """Create a Table component based on the provided data, caption, and optional footer."""
+    return Table(table_data=table_data, caption=caption, footer=footer)
+
+@agent.tool
+async def finalize_table_creation(ctx: RunContext, ui: Table) -> TableOutputTool:
+    """Finalize the creation of the table component by wrapping it in the output tool."""
+    return TableOutputTool(ui=ui, ui_element="")
 
 
 ### Charts
 @agent.tool
-async def query_for_chart(ctx: RunContext) -> ChartData:
-    """Query to get the relevant data for chart creation."""
+async def query_for_chart_data(ctx: RunContext) -> ChartData:
+    """Query to get the latest database data."""
     return ChartData(data=data)
-
 
 @agent.tool
 async def get_chart_config(ctx: RunContext) -> ChartConfig:
     """Get the configuration for the chart."""
     return ChartConfig(config=config_instance)
+
+@agent.tool
+async def create_chart_metadata(ctx: RunContext, title: str, subtitle: str, description: str) -> ChartMetadata:
+    """Create metadata for the chart component."""
+    return ChartMetadata(title=title, subtitle=subtitle, description=description)
+
+@agent.tool
+async def create_chart(ctx: RunContext, chart_type: ChartTypes, data: ChartData, config: ChartConfig, metadata: ChartMetadata, x_axis_key: str) -> Chart:
+    """Create a Chart component based on the provided data and configuration."""
+    return Chart(chart_type=chart_type, chart_data=data, chart_config=config, metadata=metadata, x_axis_key=x_axis_key)
+
+@agent.tool
+async def finalize_chart_creation(ctx: RunContext, ui: Chart) -> ChartToolOutput:
+    """Finalize the creation of the chart component by wrapping it in the output tool."""
+    return ChartToolOutput(ui=[ui], ui_element="")
 
 
 ### Methods
