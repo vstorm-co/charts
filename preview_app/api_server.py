@@ -20,7 +20,7 @@ from loguru import logger
 from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
 
-from charts.base_types import BaseComponent
+from charts.types import BaseComponent
 from charts.types.shadcn.accordion import (
     Accordion,
     AccordionList,
@@ -35,7 +35,14 @@ from charts.types.shadcn.carousel import (
     CarouselOrientation,
     CarouselToolOutput,
 )
-from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartMetadata, ChartToolOutput, ChartTypes
+from charts.types.shadcn.chart import (
+    Chart,
+    ChartConfig,
+    ChartData,
+    ChartMetadata,
+    ChartToolOutput,
+    ChartTypes,
+)
 from charts.types.shadcn.table import Table, TableData, TableFooter, TableOutputTool
 
 # Add the project root to the path for imports
@@ -187,14 +194,15 @@ async def finalize_accordion_creation(ctx: RunContext, ui: AccordionList) -> Acc
 
 ### Carousel
 @agent.tool
-async def create_carousel_item(ctx: RunContext, content: str | BaseComponent) -> CarouselItem:
+async def create_carousel_item(ctx: RunContext, content: str | Card) -> CarouselItem:
     """Generate a CarouselItem for further usage in Carousel component"""
     return CarouselItem(content=content)
 
 
 @agent.tool
 async def create_carousel_config(
-    ctx: RunContext, orientation: CarouselOrientation,
+    ctx: RunContext,
+    orientation: CarouselOrientation,
 ) -> CarouselConfig:
     """Create a CarouselConfig item to determine the behavior of final component."""
     return CarouselConfig(orientation=orientation)
@@ -202,10 +210,13 @@ async def create_carousel_config(
 
 @agent.tool
 async def create_complete_carousel(
-    ctx: RunContext, items: list[CarouselItem], config: CarouselConfig,
+    ctx: RunContext,
+    items: list[CarouselItem],
+    config: CarouselConfig,
 ) -> Carousel:
     """Create a complete Carousel component with items and config."""
     return Carousel(items=items, config=config)
+
 
 @agent.tool
 async def finalize_carousel_creation(ctx: RunContext, ui: Carousel) -> CarouselToolOutput:
@@ -219,6 +230,7 @@ async def query_for_table_data(ctx: RunContext) -> TableData:
     """Query for data that will be used to create the table."""
     return TableData(headers=headers, rows=rows)
 
+
 @agent.tool
 async def create_table(
     ctx: RunContext,
@@ -228,6 +240,7 @@ async def create_table(
 ) -> Table:
     """Create a Table component based on the provided data, caption, and optional footer."""
     return Table(table_data=table_data, caption=caption, footer=footer)
+
 
 @agent.tool
 async def finalize_table_creation(ctx: RunContext, ui: Table) -> TableOutputTool:
@@ -241,20 +254,42 @@ async def query_for_chart_data(ctx: RunContext) -> ChartData:
     """Query to get the latest database data."""
     return ChartData(data=data)
 
+
 @agent.tool
 async def get_chart_config(ctx: RunContext) -> ChartConfig:
     """Get the configuration for the chart."""
     return ChartConfig(config=config_instance)
 
+
 @agent.tool
-async def create_chart_metadata(ctx: RunContext, title: str, subtitle: str, description: str) -> ChartMetadata:
+async def create_chart_metadata(
+    ctx: RunContext,
+    title: str,
+    subtitle: str,
+    description: str,
+) -> ChartMetadata:
     """Create metadata for the chart component."""
     return ChartMetadata(title=title, subtitle=subtitle, description=description)
 
+
 @agent.tool
-async def create_chart(ctx: RunContext, chart_type: ChartTypes, data: ChartData, config: ChartConfig, metadata: ChartMetadata, x_axis_key: str) -> Chart:
+async def create_chart(
+    ctx: RunContext,
+    chart_type: ChartTypes,
+    data: ChartData,
+    config: ChartConfig,
+    metadata: ChartMetadata,
+    x_axis_key: str,
+) -> Chart:
     """Create a Chart component based on the provided data and configuration."""
-    return Chart(chart_type=chart_type, chart_data=data, chart_config=config, metadata=metadata, x_axis_key=x_axis_key)
+    return Chart(
+        chart_type=chart_type,
+        chart_data=data,
+        chart_config=config,
+        metadata=metadata,
+        x_axis_key=x_axis_key,
+    )
+
 
 @agent.tool
 async def finalize_chart_creation(ctx: RunContext, ui: Chart) -> ChartToolOutput:
@@ -306,6 +341,7 @@ async def generate_component(prompt: str) -> tuple[str, str]:
             logger.info("Generated component successfully")
             logger.info(f"Status message: {status_msg}")
             logger.info(f"UI element length: {len(ui_element)} characters")
+            logger.info(f"Usage: {result.usage()}")
 
             return status_msg, ui_element
         logger.warning("No output received from agent")

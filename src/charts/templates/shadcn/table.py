@@ -24,7 +24,10 @@ export default function GeneratedUI() {
       <TableHeader>
         <TableRow>
         {% for header in headers %}
-          <TableHead{% if loop.last %} className="text-right"{% endif %}>{{ header | capitalize }}</TableHead>
+          <TableHead
+          {% if loop.last %} className="text-right"
+          {% endif %}>
+          {{ header | capitalize }}</TableHead>
         {% endfor %}
         </TableRow>
       </TableHeader>
@@ -32,7 +35,10 @@ export default function GeneratedUI() {
         {items.map((item, index) => (
           <TableRow key={index}>
             {% for header in headers %}
-            <TableCell{% if loop.first %} className="font-medium"{% elif loop.last %} className="text-right"{% endif %}>
+            <TableCell
+            {% if loop.first %} className="font-medium"
+            {% elif loop.last %} className="text-right"
+            {% endif %}>
               {item["{{ header }}"]}
             </TableCell>
             {% endfor %}

@@ -7,7 +7,9 @@
 from importlib.metadata import version
 
 from charts.base_types import BaseComponent, CustomType
-from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartToolOutput
+from charts.engines.shadcn import ShadcnTranslator
+from charts.toolset import create_ui_toolset
+from charts.types.shadcn.chart import Chart, ChartConfig, ChartData
 
 __all__ = [
     # Base types
@@ -18,7 +20,10 @@ __all__ = [
     "ChartData",
     "ChartConfig",
     "Chart",
-    "ChartToolOutput",
+    # Toolset
+    "create_ui_toolset",
+    # Engines
+    "ShadcnTranslator",
 ]
 
 __version__ = version("charts")
