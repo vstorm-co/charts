@@ -1,4 +1,5 @@
 import json
+from typing import Literal
 
 from jinja2 import Template
 
@@ -23,8 +24,14 @@ from charts.templates.shadcn.chart import (
 from charts.templates.shadcn.table import SHADCN_TABLE_TEMPLATE
 
 
-class ShadcnTranslator:
-    def __init__(self) -> None:
+class Shadcn:
+    name: str
+    return_mode: Literal["json", "tsx"]
+
+    def __init__(self, return_mode: Literal["json", "tsx"]) -> None:
+        self.name = "shadcn"
+        self.return_mode = return_mode
+
         self.CHART_TEMPLATES = {
             "pie": SHADCN_PIE_CHART_TEMPLATE,
             "line": SHADCN_LINE_CHART_TEMPLATE,
@@ -42,6 +49,9 @@ class ShadcnTranslator:
     ### Table
     async def render_table_component(self, table: BaseTable) -> str:
         """Transform the Table object into `shadcn` component."""
+        if self.return_mode == "json":
+            return table.model_dump_json(indent=4, ensure_ascii=False)
+
         # Format the data
         headers = table.table_data.headers
         items_data = [dict(zip(headers, row, strict=True)) for row in table.table_data.rows]
@@ -74,6 +84,9 @@ class ShadcnTranslator:
     ### Accordion
     async def render_accordion_component(self, accordion: BaseAccordion) -> str:
         """Transform the Accordion objects into `shadcn` component."""
+        if self.return_mode == "json":
+            return accordion.model_dump_json(indent=4, ensure_ascii=False)
+
         # Prepare data
         items_data = [item.model_dump() for item in accordion.items]
         items_json = json.dumps(items_data)
@@ -88,6 +101,9 @@ class ShadcnTranslator:
     ### Card
     async def render_card_component(self, card: BaseCard) -> str:
         """Transform the Card object into a `shadcn` component."""
+        if self.return_mode == "json":
+            return card.model_dump_json(indent=4, ensure_ascii=False)
+
         return SHADCN_CARD_TEMPLATE.render(
             title=card.title,
             description=card.description,
@@ -98,6 +114,9 @@ class ShadcnTranslator:
     ### Carousel
     async def render_carousel_component(self, carousel: BaseCarousel) -> str:
         """Transform the Carousel object into a `shadcn` component."""
+        if self.return_mode == "json":
+            return carousel.model_dump_json(indent=4, ensure_ascii=False)
+
         # Prepare data
         items_data = [i.model_dump(mode="json") for i in carousel.items]
         items_json = json.dumps(items_data, default=str)
@@ -114,6 +133,9 @@ class ShadcnTranslator:
     ### Chart
     async def render_chart_component(self, chart: BaseChart) -> str:
         """Transform the Chart object into a `shadcn` component."""
+        if self.return_mode == "json":
+            return chart.model_dump_json(indent=4, ensure_ascii=False)
+
         # Get proper template
         template = self.__get_chart_template(chart.chart_type)
 

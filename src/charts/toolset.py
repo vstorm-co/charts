@@ -131,6 +131,7 @@ def create_ui_toolset(*, id: str | None = None) -> FunctionToolset[EngineDeps]:
                 "ui_element": component,
                 "component_type": chart.component_type,
                 "data_summary": {"num_elements": (len(chart.chart_data.data))},
+                # TODO config - colors, library name
             },
         )
 

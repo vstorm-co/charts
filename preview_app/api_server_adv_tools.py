@@ -18,7 +18,7 @@ from loguru import logger
 from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
 
-from charts.engines.shadcn import ShadcnTranslator
+from charts.engines.shadcn import Shadcn
 from charts.protocol import EngineProtocol
 from charts.toolset import SHADCN_TOOLSET_PROMPT, EngineDeps, create_ui_toolset
 from charts.types.shadcn.chart import ChartData
@@ -106,7 +106,7 @@ Do not end without returning a final output.
 
 ### Agent preparation & dependencies
 SHADCN_TRANSLATOR_DEPS = EngineProtocol
-SHADCN_TRANSLATOR = ShadcnTranslator()
+SHADCN_TRANSLATOR = Shadcn("json")
 
 # Simplified agent
 agent = Agent(
@@ -118,7 +118,7 @@ agent = Agent(
 
 # Toolset usage
 toolset = create_ui_toolset()
-deps = EngineDeps(engine=ShadcnTranslator())
+deps = EngineDeps(engine=Shadcn("json"))
 
 toolset_agent = Agent(
     "openai:gpt-5.1",
