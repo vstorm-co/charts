@@ -28,9 +28,9 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/charts"]
 
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["charts*"]
+# [tool.setuptools.packages.find]
+# where = ["src"]
+# include = ["charts*"]
 
 [dependency-groups]
 dev = [
@@ -91,7 +91,11 @@ asyncio_default_fixture_loop_scope = "function"
 # Coverage configuration
 [tool.coverage.run]
 branch = true
-source = ["src/charts"]
+source = [
+    "src/charts/engines",
+    "src/charts/types",
+    "src/charts/templates",
+    ]
 data_file = ".coverage/.coverage"
 
 [tool.coverage.report]

@@ -5,6 +5,7 @@ from jinja2 import Template
 
 from charts.base_types import (
     BaseAccordion,
+    BaseAgentUIConfig,
     BaseCard,
     BaseCarousel,
     BaseChart,
@@ -22,11 +23,13 @@ from charts.templates.shadcn.chart import (
     SHADCN_RADAR_CHART_TEMPLATE,
 )
 from charts.templates.shadcn.table import SHADCN_TABLE_TEMPLATE
+from charts.types.shadcn.table import TableFooter
 
 
 class Shadcn:
     name: str
     return_mode: Literal["json", "tsx"]
+    config: BaseAgentUIConfig
 
     def __init__(self, return_mode: Literal["json", "tsx"]) -> None:
         self.name = "shadcn"
@@ -60,7 +63,7 @@ class Shadcn:
         # Handle footer logic
         footer_value = None
         footer_keyword = ""
-        if table.footer:
+        if isinstance(table.footer, TableFooter):
             footer_keyword = table.footer.keyword
             if table.footer.header_to_summarize in headers:
                 try:

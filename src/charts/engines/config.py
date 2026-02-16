@@ -13,10 +13,8 @@ class ShadcnLightColors(BaseColors):
     """A `shadcn` light theme color palette."""
 
 
-
 class ShadcnDarkColors(BaseColors):
     """A `shadcn` dark theme color palette."""
-
 
 
 class ShadcnColorPalette(BaseColorPalette):

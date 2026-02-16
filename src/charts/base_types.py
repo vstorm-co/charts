@@ -43,13 +43,15 @@ class BaseLibraryConfig(CustomType):
     framework: Literal["react"] = "react"
     library: Literal["shadcn"] = "shadcn"  # More libs in the future
     is_package: bool = Field(
-        False, description="True if components are in node_modules, False if local files",
+        False,
+        description="True if components are in node_modules, False if local files",
     )
 
     # Path & Import logic
     import_alias: str = Field("@/components", description="Alias used for local component imports")
     component_path: str = Field(
-        "ui", description="Sub-directory for components (e.g. '@/components/ui')",
+        "ui",
+        description="Sub-directory for components (e.g. '@/components/ui')",
     )
     use_typescript: bool = True
     styling_strategy: Literal["tailwind", "css-in-js", "inline"] = "tailwind"
