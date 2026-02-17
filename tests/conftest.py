@@ -1,17 +1,19 @@
 """Shared text fixtures and helpers for charts package."""
 
-from pydantic_ai.models.test import TestModel
-from pydantic_ai import FunctionToolset, Tool
-from charts.toolset import EngineDeps
 from typing import Any
+
+from pydantic_ai import FunctionToolset, Tool
+from pydantic_ai.models.test import TestModel
+
 from charts.base_types import (
     BaseAccordion,
+    BaseAccordionItem,
+    BaseAccordionTypes,
     BaseTable,
     BaseTableData,
     BaseTableFooter,
-    BaseAccordionItem,
-    BaseAccordionTypes,
 )
+from charts.toolset import EngineDeps
 
 MODEL = TestModel()
 

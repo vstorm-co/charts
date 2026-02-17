@@ -1,3 +1,5 @@
+from typing import Literal
+
 from charts.base_types import BaseTable, BaseTableData, BaseTableFooter
 
 
@@ -21,4 +23,4 @@ class TableFooter(BaseTableFooter):
 class Table(BaseTable):
     """A Table component."""
 
-    component_type: str = "table"
+    component_type: Literal["table"] = "table"

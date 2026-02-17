@@ -1,6 +1,6 @@
-from typing import Any
+from typing import Literal
 
-from pydantic import field_validator
+from pydantic import model_validator
 
 from charts.base_types import BaseChart, BaseChartConfig, BaseChartData, BaseChartMetadata
 
@@ -42,19 +42,19 @@ class ChartData(BaseChartData):
 class Chart(BaseChart):
     """Basic object to store various charts for component rendering."""
 
-    component_type: str = "chart"
+    component_type: Literal["chart"] = "chart"
 
-    @field_validator("x_axis_key")
-    @classmethod
-    def validate_x_axis_key(cls, v: str, info: Any) -> str:
-        # Pydantic V2 stores sibling fields in info.data
-        chart_data_obj = info.data.get("chart_data")
+    @model_validator(mode="after")
+    def validate_keys_exist_in_data(self) -> "Chart":
+        # Ensure we have data to check against
+        if not self.chart_data.data:
+            raise ValueError("chart_data must contain at least one row of data.")
 
-        if chart_data_obj and hasattr(chart_data_obj, "data") and chart_data_obj.data:
-            # Check the keys of the first dictionary in the list
-            available_keys = chart_data_obj.data[0].keys()
-            if v not in available_keys:
-                raise ValueError(
-                    f"x_axis_key '{v}' must be one of the data keys: {list(available_keys)}",
-                )
-        return v
+        available_keys = self.chart_data.data[0].keys()
+
+        if self.x_axis_key not in available_keys:
+            raise ValueError(
+                f"x_axis_key '{self.x_axis_key}' not found in data keys: {list(available_keys)}",
+            )
+
+        return self

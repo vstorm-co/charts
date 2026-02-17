@@ -1,3 +1,5 @@
+from typing import Literal
+
 from charts.base_types import BaseAccordion, BaseAccordionItem
 
 
@@ -15,7 +17,7 @@ class AccordionItem(BaseAccordionItem):
 
     """
 
-    component_type: str = "accordion_item"
+    component_type: Literal["accordion_item"] = "accordion_item"
 
 
 class Accordion(BaseAccordion):
@@ -40,4 +42,4 @@ class Accordion(BaseAccordion):
 
     """
 
-    component_type: str = "accordion"
+    component_type: Literal["accordion"] = "accordion"

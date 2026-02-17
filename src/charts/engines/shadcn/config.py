@@ -29,9 +29,9 @@ class ShadcnLibraryConfig(BaseLibraryConfig):
 
     framework: Literal["react"] = "react"
     library: Literal["shadcn"] = "shadcn"
-    import_alias = "@/components"
-    component_path = "@/components/ui"
-    use_typescript = True
+    import_alias: str = "@/components"
+    component_path: str = "@/components/ui"
+    use_typescript: bool = True
     styling_strategy: Literal["tailwind"] = "tailwind"
 
 
@@ -39,7 +39,7 @@ class ShadcnUIConfig(BaseUIConfig):
     """A `shadcn` UI configuration for agentic component creation."""
 
     color_palette: ShadcnColorPalette
-    mode = "system"
+    mode: Literal["light", "dark", "system"] = "system"
 
 
 class ShadcnAgentUIConfig(BaseAgentUIConfig):

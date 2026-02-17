@@ -170,6 +170,7 @@ class Shadcn:
                     row["fill"] = chart.chart_config.config[label_value].get("color")
                 else:
                     row["fill"] = f"var(--chart-{(i % 5) + 1})"
+        ### END PIE CHART SPECIFIC ###
 
         try:
             if template and isinstance(template, Template):
@@ -184,5 +185,5 @@ class Shadcn:
                 )
             return "Chart could not be created"
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             return f"An error has occurred while creating a chart: {e}"

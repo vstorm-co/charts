@@ -1,12 +1,14 @@
+from typing import Literal
+
 from pydantic import field_validator
 
-from charts.base_types import BaseCarousel, BaseCarouselConfig, BaseComponent
+from charts.base_types import BaseCarousel, BaseCarouselConfig, BaseCarouselItem
 
 
-class CarouselItem(BaseComponent):
+class CarouselItem(BaseCarouselItem):
     """A single element that is used in the Carousel component."""
 
-    component_type: str = "carousel_item"
+    component_type: Literal["carousel_item"] = "carousel_item"
 
 
 class CarouselConfig(BaseCarouselConfig):
@@ -16,7 +18,7 @@ class CarouselConfig(BaseCarouselConfig):
 class Carousel(BaseCarousel):
     """A complete Carousel component with items."""
 
-    component_type: str = "carousel"
+    component_type: Literal["carousel"] = "carousel"
 
     @field_validator("items", mode="before")
     @classmethod

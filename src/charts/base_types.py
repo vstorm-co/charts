@@ -143,11 +143,11 @@ class BaseChartMetadata(CustomType):
 
 
 class BaseChartConfig(CustomType):
-    config: dict[str, dict[str, str]]
+    config: dict[str, dict[str, str]] = Field(default_factory=dict)
 
 
 class BaseChartData(CustomType):
-    data: list[dict[str, Any]]
+    data: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class BaseChart(BaseComponent):
@@ -211,7 +211,7 @@ class BaseCarouselItem(BaseComponent):
 class BaseCarouselConfig(CustomType):
     align: Literal["start"] | None = "start"
     loop: Literal["true", "false"] | None = "true"
-    orientation: CarouselOrientation
+    orientation: CarouselOrientation = Field(default=CarouselOrientation.horizontal)
     container_class: str | None = "max-w-xs"
 
 
