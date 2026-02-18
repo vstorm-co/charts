@@ -15,16 +15,16 @@ class ChartConfig(BaseChartConfig):
     """Config for a chart. Maps data keys to labels and colors.
 
     Example (Bar/Line/Area/Radar):
-    {
+    `{
         "desktop": {"label": "Desktop", "color": "#2563eb"},
         "mobile": {"label": "Mobile", "color": "#60a5fa"}
-    }
+    }`
 
     Example (Pie):
-    {
+    `{
         "chrome": {"label": "Chrome", "color": "var(--chart-1)"},
         "safari": {"label": "Safari", "color": "var(--chart-2)"}
-    }
+    }`
     """
 
 
@@ -32,10 +32,16 @@ class ChartData(BaseChartData):
     """The actual data points for the chart.
 
     Example (Bar/Line/Area/Radar):
-    [{"month": "Jan", "desktop": 100, "mobile": 80}, {"month": "Feb", "desktop": 120, "mobile": 90}]
+    `[
+        {"month": "Jan", "desktop": 100, "mobile": 80},
+        {"month": "Feb", "desktop": 120, "mobile": 90}
+    ]`
 
     Example (Pie):
-    [{"category": "Chrome", "value": 275}, {"category": "Safari", "value": 200}]
+    `[
+        {"category": "Chrome", "value": 275},
+        {"category": "Safari", "value": 200}
+    ]`
     """
 
 
