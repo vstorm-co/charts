@@ -31,9 +31,11 @@ class Shadcn:
     return_mode: Literal["json", "tsx"]
     config: BaseAgentUIConfig
 
-    def __init__(self, return_mode: Literal["json", "tsx"]) -> None:
+    def __init__(self, return_mode: Literal["json", "tsx"], config: BaseAgentUIConfig) -> None:
+
         self.name = "shadcn"
         self.return_mode = return_mode
+        self.config = config
 
         self.CHART_TEMPLATES = {
             "pie": SHADCN_PIE_CHART_TEMPLATE,

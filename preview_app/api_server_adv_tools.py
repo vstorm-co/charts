@@ -19,6 +19,7 @@ from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
 
 from charts.engines.shadcn import Shadcn
+from charts.engines.shadcn.config import ShadcnAgentUIConfig
 from charts.protocol import EngineProtocol
 from charts.toolset import SHADCN_TOOLSET_PROMPT, EngineDeps, create_ui_toolset
 from charts.types.shadcn.chart import ChartData
@@ -106,7 +107,7 @@ Do not end without returning a final output.
 
 ### Agent preparation & dependencies
 SHADCN_TRANSLATOR_DEPS = EngineProtocol
-SHADCN_TRANSLATOR = Shadcn("json")
+# SHADCN_TRANSLATOR = Shadcn("json")
 
 # Simplified agent
 agent = Agent(
@@ -118,7 +119,9 @@ agent = Agent(
 
 # Toolset usage
 toolset = create_ui_toolset()
-deps = EngineDeps(engine=Shadcn("json"))
+config = ShadcnAgentUIConfig()
+engine = Shadcn("json", config=config)
+deps = EngineDeps(engine=engine)
 
 toolset_agent = Agent(
     "openai:gpt-5.1",
@@ -380,6 +383,7 @@ async def generate_component(prompt: str) -> tuple[str, str]:
                         ):
                             # if "ui_element" in part["metadata"].keys():
                             ui_element = part["metadata"]["ui_element"]
+                            config = part["metadata"].get("config", {})
 
                 if "usage" in msg:
                     logger.info(f"Partial usage: {msg['usage']}")
@@ -403,6 +407,7 @@ async def generate_component(prompt: str) -> tuple[str, str]:
             # Log the output
             logger.info("Generated component successfully")
             logger.info(f"Status message: {status_msg}")
+            logger.info(f"Config used: {config}")
             logger.info(f"UI element length: {len(ui_element)} characters")
             logger.info(f"Usage: {result.usage()}")
 

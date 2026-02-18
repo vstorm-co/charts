@@ -15,18 +15,20 @@ class CustomType(BaseModel):
 class BaseColors(CustomType):
     """A base color palette object."""
 
-    primary: str = Field("#858586", description="Hex or CSS variable for primary color.")
-    secondary: str = Field("#0FB1E2", description="Hex or CSS variable for secondary color.")
-    tertiary: str = Field("#E9E040", description="Hex or CSS variable for tertiary color.")
-    success: str = Field("#33C819", description="Hex or CSS variable for success color.")
-    danger: str = Field("#EE8A19", description="Hex or CSS variable for danger color.")
-    warning: str = Field("#D6E718", description="Hex or CSS variable for warning color.")
-    error: str = Field("#FF0000", description="Hex or CSS variable for error color.")
+    primary: str = Field(default="#858586", description="Hex or CSS variable for primary color.")
+    secondary: str = Field(
+        default="#0FB1E2", description="Hex or CSS variable for secondary color."
+    )
+    tertiary: str = Field(default="#E9E040", description="Hex or CSS variable for tertiary color.")
+    success: str = Field(default="#33C819", description="Hex or CSS variable for success color.")
+    danger: str = Field(default="#EE8A19", description="Hex or CSS variable for danger color.")
+    warning: str = Field(default="#D6E718", description="Hex or CSS variable for warning color.")
+    error: str = Field(default="#FF0000", description="Hex or CSS variable for error color.")
 
     # Neutrals - Essential for MUI 'Paper' and Shadcn 'Card'
-    background: str = Field("#FFFFFF", description="The main background color")
-    surface: str = Field("#F4F4F5", description="Color for cards, modals, etc.")
-    text: str = Field("#09090B", description="The default text color")
+    background: str = Field(default="#FFFFFF", description="The main background color")
+    surface: str = Field(default="#F4F4F5", description="Color for cards, modals, etc.")
+    text: str = Field(default="#09090B", description="The default text color")
 
 
 class BaseColorPalette(CustomType):
@@ -62,7 +64,9 @@ class BaseUIConfig(CustomType):
 
     color_palette: BaseColorPalette
     mode: Literal["light", "dark", "system"] = "system"
-    radius: float = Field(0.5, description="Border radius multiplier (0 for sharp, 1+ for rounded)")
+    radius: float = Field(
+        default=0.5, description="Border radius multiplier (0 for sharp, 1+ for rounded)"
+    )
     density: Literal["compact", "comfortable", "spacious"] = "comfortable"
 
 

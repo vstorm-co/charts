@@ -66,6 +66,7 @@ def create_ui_toolset(*, id: str | None = None) -> FunctionToolset[EngineDeps]:
             return_value=f"Successfully created table: {table.caption}",
             metadata={
                 "ui_element": component,
+                "config": ctx.deps.engine.config.model_dump(),
                 "component_type": table.component_type,
                 "data_summary": {"rows": len(table.table_data.rows)},
             },
@@ -81,6 +82,7 @@ def create_ui_toolset(*, id: str | None = None) -> FunctionToolset[EngineDeps]:
             return_value=f"Successfully created an accordion with {len(accordion.items)} items",
             metadata={
                 "ui_element": component,
+                "config": ctx.deps.engine.config.model_dump(),
                 "component_type": accordion.component_type,
                 "data_summary": {"num_elements": len(accordion.items)},
             },
@@ -96,6 +98,7 @@ def create_ui_toolset(*, id: str | None = None) -> FunctionToolset[EngineDeps]:
             return_value=f"Successfully created card component with title: {card.title}",
             metadata={
                 "ui_element": component,
+                "config": ctx.deps.engine.config.model_dump(),
                 "component_type": card.component_type,
                 "data_summary": {"content_type": f"{type(card.content)}"},
             },
@@ -114,6 +117,7 @@ def create_ui_toolset(*, id: str | None = None) -> FunctionToolset[EngineDeps]:
             ),
             metadata={
                 "ui_element": component,
+                "config": ctx.deps.engine.config.model_dump(),
                 "component_type": carousel.component_type,
                 "data_summary": {"num_elements": len(carousel.items)},
             },
@@ -129,9 +133,9 @@ def create_ui_toolset(*, id: str | None = None) -> FunctionToolset[EngineDeps]:
             return_value=f"Successfully created chart: {chart.metadata.title}",
             metadata={
                 "ui_element": component,
+                "config": ctx.deps.engine.config.model_dump(),
                 "component_type": chart.component_type,
                 "data_summary": {"num_elements": (len(chart.chart_data.data))},
-                # TODO config - colors, library name
             },
         )
 
