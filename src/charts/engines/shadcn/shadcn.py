@@ -12,6 +12,7 @@ from charts.base_types import (
     BaseChartTypes,
     BaseTable,
 )
+from charts.engines.shadcn.config import ShadcnAgentUIConfig
 from charts.templates.shadcn.accordion import SHADCN_ACCORDION_TEMPLATE
 from charts.templates.shadcn.card import SHADCN_CARD_TEMPLATE
 from charts.templates.shadcn.carousel import SHADCN_CAROUSEL_TEMPLATE
@@ -25,13 +26,17 @@ from charts.templates.shadcn.chart import (
 from charts.templates.shadcn.table import SHADCN_TABLE_TEMPLATE
 from charts.types.shadcn.table import TableFooter
 
+CONFIG = ShadcnAgentUIConfig()
+
 
 class Shadcn:
     name: str
     return_mode: Literal["json", "tsx"]
     config: BaseAgentUIConfig
 
-    def __init__(self, return_mode: Literal["json", "tsx"], config: BaseAgentUIConfig) -> None:
+    def __init__(
+        self, return_mode: Literal["json", "tsx"], config: BaseAgentUIConfig = CONFIG
+    ) -> None:
 
         self.name = "shadcn"
         self.return_mode = return_mode
