@@ -11,7 +11,7 @@ Generates interactive charts using Recharts library.
 ### Chart Types
 
 | Type | Use Case |
-|------|----------|
+| ------ | ---------- |
 | `bar` | Comparing values across categories |
 | `line` | Showing trends over time |
 | `pie` | Displaying proportions |
@@ -21,19 +21,37 @@ Generates interactive charts using Recharts library.
 ### Example
 
 ```python
-from charts.types.shadcn.chart import Chart, ChartConfig, ChartData
+from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartMetadata
+from charts.base_types import BaseChartTypes
+
+chart_config = ChartConfig(
+    config={
+        "subscriptions": {"label": "New Subscriptions", "color": "#2563eb"},
+        "revenue": {"label": "Monthly Revenue", "color": "#10b981"},
+    }
+)
+
+chart_data = ChartData(data=[
+    {"month": "January", "subscriptions": 186, "revenue": 450},
+    {"month": "February", "subscriptions": 305, "revenue": 52},
+    {"month": "March", "subscriptions": 237, "revenue": 480},
+    {"month": "April", "subscriptions": 73, "revenue": 210},
+    {"month": "May", "subscriptions": 209, "revenue": 59},
+    {"month": "June", "subscriptions": 214, "revenue": 610},
+])
+
+chart_metadata = ChartMetadata(
+        title="Monthly Revenue & Subscriptions",
+        subtitle="Sales & revenue for the first quarter",
+        description="This chart shows the subscriptions and revenue figures for January, February, and March."
+    )
 
 chart = Chart(
-    data=[
-        ChartData(name='Jan', sales=400),
-        ChartData(name='Feb', sales=300),
-    ],
-    config=ChartConfig(
-        type='bar',
-        x_key='name',
-        y_keys=['sales'],
-        title='Monthly Sales'
-    )
+    chart_type=BaseChartTypes.bar,
+    chart_data=chart_data,
+    chart_config=chart_config,
+    metadata=chart_metadata,
+    x_axis_key="month"
 )
 ```
 
@@ -43,29 +61,26 @@ chart = Chart(
 
 Displays data in a grid format with optional footer calculations.
 
-### Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `data` | list[TableData] | Row data as dictionaries |
-| `headers` | list[str] | Column header names |
-| `column_labels` | dict | Human-readable column names |
-| `caption` | str | Table caption |
-| `footer` | TableFooter | Optional summary row |
-
 ### Example
 
 ```python
-from charts.types.shadcn.table import Table, TableData
+from charts.types.shadcn.table import Table, TableData, TableFooter
+
+table_data = TableData(
+    headers=["name", "position", "sales"],
+    rows=[("Alice", "Manager", 1000), ("Bob", "Salesperson", 500)],
+)
+
+table_footer = TableFooter(
+    keyword="Total",
+    header_to_summarize="sales",
+    value=1500,
+)
 
 table = Table(
-    data=[
-        TableData(name='Product A', price=29.99, stock=100),
-        TableData(name='Product B', price=49.99, stock=50),
-    ],
-    headers=['name', 'price', 'stock'],
-    column_labels={'name': 'Name', 'price': 'Price ($)', 'stock': 'Stock'},
-    caption='Product Inventory'
+    table_data=table_data,
+    caption="Sales Team",
+    footer=table_footer,
 )
 ```
 
@@ -75,25 +90,16 @@ table = Table(
 
 Container component with title, description, content, and footer.
 
-### Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `title` | str | Card title |
-| `description` | str | Subtitle/description |
-| `content` | str \| BaseComponent | Main content (text or nested component) |
-| `footer` | str | Footer text |
-
 ### Example
 
 ```python
 from charts.types.shadcn.card import Card
 
 card = Card(
-    title='Revenue',
-    description='Total sales this quarter',
-    content='$125,430',
-    footer='Updated today at 10:30 AM'
+    title="Random Space Fact",
+    description="A quick, fascinating tidbit about our universe.",
+    content="Neutron stars are so dense that a sugar-cube-sized amount of their material would weigh about 1 billion tons on Earth.",
+    footer="Source: NASA & astrophysics research summaries"
 )
 ```
 
@@ -103,32 +109,26 @@ card = Card(
 
 Collapsible content panels that can be expanded/collapsed.
 
-### Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `items` | list[AccordionItem] | Accordion panel items |
-| `list_type` | 'single' \| 'multiple' | Single or multiple expansion |
-
-### AccordionItem Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `value` | str | Unique identifier |
-| `trigger` | str | Header text |
-| `content` | str | Expandable content |
-
 ### Example
 
 ```python
 from charts.types.shadcn.accordion import Accordion, AccordionItem
+from charts.base_types import BaseAccordionTypes
 
 accordion = Accordion(
     items=[
-        AccordionItem(value='item1', trigger='Section 1', content='Content for section 1'),
-        AccordionItem(value='item2', trigger='Section 2', content='Content for section 2'),
+        AccordionItem(
+            value="item-1",
+            trigger="What is Shadcn UI?",
+            content="Shadcn UI is a collection of reusable components built using Radix UI and Tailwind CSS. It provides unstyled, accessible primitives that you can customize to match your design system."
+        ),
+        AccordionItem(
+            value="item-2",
+            trigger="Is this accordion accessible?",
+            content="Yes. It follows WAI-ARIA accordion patterns, supports keyboard navigation (Tab, Enter, Space, Arrow keys), and is screen-reader friendly when implemented with the underlying Radix UI primitives."
+        )
     ],
-    list_type='single'
+    list_type=BaseAccordionTypes.single
 )
 ```
 
@@ -138,31 +138,18 @@ accordion = Accordion(
 
 Scrollable container for cards or text content.
 
-### Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `items` | list[CarouselItem] | Carousel slide items |
-| `config` | CarouselConfig | Carousel behavior settings |
-
-### CarouselConfig Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `align` | 'start' | Alignment of slides |
-| `loop` | 'true' \| 'false' | Infinite loop mode |
-| `orientation` | 'horizontal' \| 'vertical' | Scroll direction |
-
 ### Example
 
 ```python
-from charts.types.shadcn.carousel import Carousel, CarouselItem, CarouselConfig
-from charts.types.shadcn.card import Card
+from charts.types.shadcn.carousel import Carousel, CarouselConfig, CarouselItem
+from charts.base_types import CarouselOrientation
 
-card = Card(title='Slide 1', description='First slide', content='Content', footer='Footer')
-
+config = CarouselConfig(orientation=CarouselOrientation.horizontal)
 carousel = Carousel(
-    items=[CarouselItem(content=card)],
-    config=CarouselConfig(align='start', loop='true', orientation='horizontal')
+    items=[
+        CarouselItem(content="Item 1"),
+        CarouselItem(content="Item 2"),
+    ],
+    config=config,
 )
 ```

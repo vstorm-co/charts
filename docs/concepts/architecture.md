@@ -4,34 +4,28 @@ Charts follows a layered architecture that separates concerns from abstract defi
 
 ## Layered Architecture
 
-```
+```bash
 ┌─────────────────────────────────────────────────────────────┐
-│                    Agent / API Layer                         │
-│              (pydantic-ai, FastAPI, MCP)                     │
+│                    Agent / API Layer                        │
+│                       (pydantic-ai )                        │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                  Toolset Layer                               │
-│           FunctionToolset with create_* tools                │
+│                  Toolset Layer                              │
+│           FunctionToolset with create_* tools               │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              EngineProtocol (Interface)                      │
-│                    render_*(component)                       │
+│              EngineProtocol (Interface)                     │
+│                    render_*(component)                      │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                 Concrete Engine (Shadcn)                     │
-│           Implements EngineProtocol with Jinja2              │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│               Jinja2 Templates                               │
-│         Renders TSX code for React components                │
+│                 Concrete Engine (Shadcn)                    │
+│           Implements EngineProtocol with Jinja2 or JSON     │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -60,6 +54,7 @@ Concrete Pydantic models that extend base types with:
 - **Field Constraints** - Type hints and descriptions
 
 Component models:
+
 - `Table`, `Chart`, `Accordion`, `Card`, `Carousel`
 
 ## Engine Layer
@@ -88,6 +83,7 @@ class EngineProtocol(Protocol):
 Located in [`src/charts/engines/shadcn.py`](https://github.com/vstorm-co/charts/blob/main/src/charts/engines/shadcn.py)
 
 Implements `EngineProtocol` with two return modes:
+
 - **`tsx`** - Returns fully rendered React component code
 - **`json`** - Returns JSON serialization of component data
 
@@ -98,7 +94,7 @@ Located in [`src/charts/templates/shadcn/`](https://github.com/vstorm-co/charts/
 Jinja2 templates that generate React/TypeScript code:
 
 | Template | Generates |
-|----------|-----------|
+| ---------- | ----------- |
 | `table.py` | Table with headers, rows, footer |
 | `chart.py` | Bar, Line, Pie, Area, Radar charts |
 | `accordion.py` | Collapsible accordion panels |
