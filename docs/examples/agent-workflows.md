@@ -7,105 +7,177 @@ Advanced patterns for using Charts with AI agents.
 Agents can gather data through conversation before rendering components:
 
 ```python
-from pydantic_ai import Agent
-from charts.toolset import create_ui_toolset
-from charts.engines.shadcn import Shadcn
 import asyncio
+from typing import Any
 
-engine = Shadcn(return_mode='tsx')
+from pydantic_ai import Agent, RunContext
+from charts.toolset import create_ui_toolset, EngineDeps
+from charts.engines.shadcn import Shadcn, SHADCN_TOOLSET_PROMPT
+from charts.utils.helpers import get_ui_component
+
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
+engine = Shadcn(return_mode='json')
+toolset = create_ui_toolset()
+deps = EngineDeps(engine=engine)
+
+# Enhance the toolset with a custom tool to gather data from a database
+# Here we simulate this behavior returning static results
+@toolset.tool
+async def gather_db_data(ctx: RunContext) -> list[dict[str, Any]]:
+    """Fetch the data from the database to use it in the chart creation."""
+    # Simulate gathering data from a database
+    return [
+        {"month": "January", "sales": 100},
+        {"month": "February", "sales": 150},
+        {"month": "March", "sales": 200},
+    ]
+
 agent = Agent(
     'openai:gpt-5.1',
-    tools=create_ui_toolset(engine),
+    system_prompt=SHADCN_TOOLSET_PROMPT,
+    retries=3,
+    toolsets=[toolset],
+    deps_type=EngineDeps,
 )
 
-async def collect_sales_data():
-    agent = Agent(
-        'openai:gpt-5.1',
-        tools=create_ui_toolset(engine),
-    )
-
-    # Step 1: Ask for data
+async def collect_sales_data() -> str:
+    # Step 1: Ask for data (Simulated conversation)
     result1 = await agent.run(
-        "I need to create a sales chart. What are the monthly sales figures?"
+        "Fetch some data to create the sales chart.",
+        deps=deps
     )
 
     # Step 2: Generate the chart with collected data
     result2 = await agent.run(
-        "Now create a bar chart showing these sales figures"
+        "Now create a table showing these sales figures",
+        deps=deps,
+        message_history=result1.all_messages() # Maintain the conversation history
     )
 
-    return result2
+    component = get_ui_component(result2)
+    return component
 
-# asyncio.run(collect_sales_data())
+ui = asyncio.run(collect_sales_data())
+print(ui)
 ```
 
-## Context-Aware Chart Generation
+Exemplary JSON output:
 
-Pass existing context to the agent for more relevant components:
-
-```python
-from pydantic_ai import Agent
-from charts.toolset import create_ui_toolset
-from charts.engines.shadcn import Shadcn
-
-engine = Shadcn(return_mode='tsx')
-
-async def generate_contextual_chart(user_preferences: dict):
-    # Start with user context
-    system_prompt = f"""
-    You are a data visualization expert.
-    User preferences: {user_preferences}
-
-    When creating charts, consider these preferences for colors and styling.
-    """
-
-    agent = Agent(
-        'openai:gpt-5.1',
-        tools=create_ui_toolset(engine),
-        system_prompt=system_prompt,
-    )
-
-    result = await agent.run(
-        "Create a line chart of quarterly revenue growth"
-    )
-
-    return result.output
-
-# asyncio.run(generate_contextual_chart({'color_scheme': 'dark', 'focus': 'growth'}))
+```json
+{
+    "component_type": "chart",
+    "chart_type": "bar",
+    "metadata": {
+        "title": "Monthly Sales",
+        "subtitle": "Q1 Performance",
+        "description": "Sales data for the first quarter"
+    },
+    "chart_config": {
+        "config": {}
+    },
+    "chart_data": {
+        "data": [
+            {
+                "month": "January",
+                "sales": 100
+            },
+            {
+                "month": "February",
+                "sales": 150
+            },
+            {
+                "month": "March",
+                "sales": 200
+            }
+        ]
+    },
+    "x_axis_key": "month"
+}
 ```
 
-## Conditional Component Rendering
+Exemplary TSX output:
 
-Render different components based on data or user needs:
+```tsx
+"use client"
 
-```python
-from pydantic_ai import Agent
-from charts.toolset import create_ui_toolset
-from charts.engines.shadcn import Shadcn
+import * as React from "react"
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 
-engine = Shadcn(return_mode='tsx')
-agent = Agent(
-    'openai:gpt-5.1',
-    tools=create_ui_toolset(engine),
-)
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart"
 
-async def generate_dashboard(data_summary: dict):
-    """Generate appropriate components based on data characteristics."""
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card"
 
-    # Determine component type based on data
-    if data_summary.get('type') == 'time_series':
-        prompt = "Create a line chart showing trends over time"
-    elif data_summary.get('type') == 'categories':
-        prompt = "Create a bar chart comparing different categories"
-    elif data_summary.get('type') == 'distribution':
-        prompt = "Create a pie chart showing distribution"
-    else:
-        prompt = "Create a table displaying the data"
+// 1. Data keys must match the keys in your data array
+const chartData = [
+  { month: "January", sales: 100 },
+  { month: "February", sales: 150 },
+  { month: "March", sales: 200 },
+]
 
-    result = await agent.run(prompt)
-    return result.output
+// 2. Config maps the 'sales' key to a label and a CSS variable color
+const chartConfig = {
+  sales: {
+    label: "Sales",
+    color: "#4F46E5",
+  },
+} satisfies ChartConfig
 
-# asyncio.run(generate_dashboard({'type': 'time_series'}))
+export default function GeneratedComponent() {
+  return (
+    <Card className="w-full shadow-none border-none">
+      <CardHeader>
+        <CardTitle>Monthly Sales</CardTitle>
+        <CardDescription>Sales data for the first quarter</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {/* ChartContainer handles the CSS variables based on your config */}
+        <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+          <BarChart accessibilityLayer data={chartData}>
+            <CartesianGrid vertical={false} strokeDasharray="3 3" verticalFill="none" />
+
+            <XAxis
+              dataKey="month"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={10}
+              tickFormatter={(value) => value.toString().slice(0, 3)}
+            />
+
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+
+            <ChartLegend content={<ChartLegendContent />} />
+
+            {/* 3. Link the Bar to the "sales" data key */}
+            <Bar
+              dataKey="sales"
+              fill="var(--color-sales)"
+              radius={[4, 4, 0, 0]} // Slightly rounded top corners
+            />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  )
+}
 ```
 
 ## Dashboard Generation Workflow
@@ -113,79 +185,62 @@ async def generate_dashboard(data_summary: dict):
 A complete multi-component dashboard workflow:
 
 ```python
-from pydantic_ai import Agent
-from charts.toolset import create_ui_toolset
-from charts.engines.shadcn import Shadcn
+import asyncio
+from typing import Any
 
-engine = Shadcn(return_mode='tsx')
+from pydantic_ai import Agent, RunContext
+from charts.toolset import create_ui_toolset, EngineDeps
+from charts.engines.shadcn import Shadcn, SHADCN_TOOLSET_PROMPT
+from charts.utils.helpers import get_ui_component
+
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
+engine = Shadcn(return_mode='json')
+toolset = create_ui_toolset()
+deps = EngineDeps(engine=engine)
+
+@toolset.tool
+async def gather_db_data(ctx: RunContext) -> list[dict[str, Any]]:
+    """Fetch the data from the database to use it in the chart creation."""
+    # Simulate gathering data from a database
+    return [
+        {"month": "January", "sales": 100},
+        {"month": "February", "sales": 150},
+        {"month": "March", "sales": 200},
+    ]
 
 async def generate_complete_dashboard():
     agent = Agent(
         'openai:gpt-5.1',
-        tools=create_ui_toolset(engine),
+        system_prompt=SHADCN_TOOLSET_PROMPT,
+        toolsets=[toolset],
+        retries=3,
+        deps_type=EngineDeps
     )
 
-    # Phase 1: Collect requirements
-    req_result = await agent.run(
-        "What data should this dashboard show? What components would be most useful?"
-    )
-
-    # Phase 2: Generate individual components
+    # Phase 1: Create individual components through tool calls
     chart_result = await agent.run(
-        "Create a bar chart showing sales by region"
+        "Fetch latest data. Create a bar chart showing sales by month.",
+        deps=deps,
     )
 
     table_result = await agent.run(
-        "Create a table with detailed sales data"
-    )
-
-    card_result = await agent.run(
-        "Create a summary card with key metrics"
+        "Now also create a table with detailed sales data.",
+        deps=deps,
+        message_history=chart_result.all_messages()
     )
 
     return {
-        'chart': chart_result.output,
-        'table': table_result.output,
-        'card': card_result.output,
+        'chart': get_ui_component(chart_result),
+        'table': get_ui_component(table_result),
     }
 
-# asyncio.run(generate_complete_dashboard())
-```
+ui = asyncio.run(generate_complete_dashboard())
 
-## Tool Call Chain
-
-Chain multiple tool calls for complex component generation:
-
-```python
-from pydantic_ai import Agent
-from charts.toolset import create_ui_toolset
-from charts.engines.shadcn import Shadcn
-
-engine = Shadcn(return_mode='tsx')
-agent = Agent(
-    'openai:gpt-5.1',
-    tools=create_ui_toolset(engine),
-)
-
-async def chain_tool_calls():
-    """Generate a chart, then add it to an existing dashboard."""
-
-    # Step 1: Create base chart
-    result1 = await agent.run(
-        "Create a line chart of website traffic for the last month"
-    )
-
-    # Step 2: Modify or extend based on feedback
-    result2 = await agent.run(
-        "Add mobile vs desktop breakdown to this chart"
-    )
-
-    # Step 3: Package with additional elements
-    result3 = await agent.run(
-        "Put this chart in a card with title 'Website Traffic'"
-    )
-
-    return result3.output
-
-# asyncio.run(chain_tool_calls())
+# Print the results
+# for k, v in ui.items():
+#     print(f" *** {k.upper()} ***")
+#     print(v)
 ```

@@ -5,7 +5,7 @@ Configure library-specific settings for component generation.
 ## ShadcnLibraryConfig
 
 | Property | Type | Default | Description |
-|----------|------|---------|-------------|
+| ---------- | ------ | --------- | ------------- |
 | `framework` | "react" | "react" | Target framework |
 | `library` | "shadcn" | "shadcn" | UI library name |
 | `is_package` | bool | False | Components in node_modules? |

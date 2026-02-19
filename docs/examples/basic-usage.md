@@ -7,33 +7,42 @@ Learn to create individual components with the Charts library.
 Create a bar chart showing monthly sales:
 
 ```python
+import asyncio
 from charts.engines.shadcn import Shadcn
-from charts.types.shadcn.chart import Chart, ChartConfig, ChartData
+from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartMetadata
+from charts.base_types import BaseChartTypes
 
 engine = Shadcn(return_mode='tsx')
 
 # Create chart data
-chart_data = [
-    ChartData(month="January", desktop=186, mobile=80),
-    ChartData(month="February", desktop=305, mobile=90),
-    ChartData(month="March", desktop=237, mobile=120),
-]
+chart_data = ChartData(data=[
+    {"month": "January", "desktop": 186, "mobile": 80},
+    {"month": "February", "desktop": 305, "mobile": 90},
+    {"month": "March", "desktop": 237, "mobile": 120},
+])
 
 # Create chart config
-chart_config = {
+chart_config = ChartConfig(config={
     "desktop": {"label": "Desktop", "color": "#2563eb"},
     "mobile": {"label": "Mobile", "color": "#60a5fa"},
-}
+})
 
 # Create and render the chart
 chart = Chart(
-    title="Monthly Sales",
-    description="January - March 2024",
-    data=chart_data,
-    config=chart_config,
+    chart_type=BaseChartTypes.bar,
+    metadata=ChartMetadata(
+        title="Monthly Sales",
+        description="January - March 2024"
+    ),
+    chart_data=chart_data,
+    chart_config=chart_config,
+    x_axis_key="month"
 )
 
-tsx_code = engine.render_chart_component(chart)
+tsx_code = asyncio.run(engine.render_chart_component(chart))
+
+# See the results
+# print(tsx_code)
 ```
 
 ## Table Component
@@ -41,26 +50,32 @@ tsx_code = engine.render_chart_component(chart)
 Create a data table showing user information:
 
 ```python
+import asyncio
 from charts.engines.shadcn import Shadcn
-from charts.types.shadcn.table import Table
+from charts.types.shadcn.table import Table, TableData
 
 engine = Shadcn(return_mode='tsx')
 
-# Create table rows
-table_data = [
-    {"name": "Alice Johnson", "email": "alice@example.com", "status": "Active"},
-    {"name": "Bob Smith", "email": "bob@example.com", "status": "Inactive"},
-    {"name": "Carol White", "email": "carol@example.com", "status": "Active"},
-]
+# Create table data
+table_data = TableData(
+    headers=["Name", "Email", "Status"],
+    rows=[
+        ("Alice Johnson", "alice@example.com", "Active"),
+        ("Bob Smith", "bob@example.com", "Inactive"),
+        ("Carol White", "carol@example.com", "Active"),
+    ]
+)
 
 # Create and render the table
 table = Table(
     caption="User Management Table",
-    headers=["Name", "Email", "Status"],
-    items=table_data,
+    table_data=table_data,
 )
 
-tsx_code = engine.render_table_component(table)
+tsx_code = asyncio.run(engine.render_table_component(table))
+
+# See the results
+# print(tsx_code)
 ```
 
 ## Card Component
@@ -68,6 +83,7 @@ tsx_code = engine.render_table_component(table)
 Create a card with title, description, and content:
 
 ```python
+import asyncio
 from charts.engines.shadcn import Shadcn
 from charts.types.shadcn.card import Card
 
@@ -81,7 +97,10 @@ card = Card(
     footer="Updated: Today at 5:30 PM",
 )
 
-tsx_code = engine.render_card_component(card)
+tsx_code = asyncio.run(engine.render_card_component(card))
+
+# See the results
+# print(tsx_code)
 ```
 
 ## Accordion Component
@@ -89,60 +108,66 @@ tsx_code = engine.render_card_component(card)
 Create an accordion with multiple expandable sections:
 
 ```python
+import asyncio
 from charts.engines.shadcn import Shadcn
-from charts.types.shadcn.accordion import Accordion, AccordionItem
+from charts.types.shadcn.accordion import Accordion
+from charts.base_types import BaseAccordionItem, BaseAccordionTypes
 
 engine = Shadcn(return_mode='tsx')
 
 # Create accordion items
 items = [
-    AccordionItem(title="Getting Started", content="Learn the basics of our platform."),
-    AccordionItem(title="Advanced Features", content="Explore power user capabilities."),
-    AccordionItem(title="FAQ", content="Common questions and answers."),
+    BaseAccordionItem(value="getting-started", trigger="Getting Started", content="Learn the basics of our platform."),
+    BaseAccordionItem(value="advanced", trigger="Advanced Features", content="Explore power user capabilities."),
+    BaseAccordionItem(value="faq", trigger="FAQ", content="Common questions and answers."),
 ]
 
 # Create and render the accordion (multiple expansion)
 accordion = Accordion(
-    title="Help Center",
     items=items,
-    type="multiple",
+    list_type=BaseAccordionTypes.multiple,
 )
 
-tsx_code = engine.render_accordion_component(accordion)
+tsx_code = await engine.render_accordion_component(accordion)
+
+# See the results
+# print(tsx_code)
 ```
 
 ## Carousel Component
 
-Create an image carousel with multiple slides:
+Create a carousel with multiple slides:
 
 ```python
+import asyncio
 from charts.engines.shadcn import Shadcn
-from charts.types.shadcn.carousel import Carousel, CarouselItem
+from charts.types.shadcn.carousel import Carousel, CarouselItem, CarouselConfig
 
 engine = Shadcn(return_mode='tsx')
 
 # Create carousel items
 items = [
     CarouselItem(
-        title="Product Alpha",
-        description="Our flagship product",
-        image_url="/images/alpha.jpg",
+        content="Welcome to Product Alpha - our flagship product"
     ),
     CarouselItem(
-        title="Product Beta",
-        description="Best seller of the year",
-        image_url="/images/beta.jpg",
+        content="Product Beta - Best seller of the year"
     ),
 ]
 
 # Create and render the carousel
 carousel = Carousel(
     items=items,
-    orientation="horizontal",
-    loop=True,
+    config=CarouselConfig(
+        orientation="horizontal",
+        loop="true"
+    ),
 )
 
-tsx_code = engine.render_carousel_component(carousel)
+tsx_code = await engine.render_carousel_component(carousel)
+
+# See the results
+# print(tsx_code)
 ```
 
 ## Complete Example with Pydantic AI
@@ -150,18 +175,32 @@ tsx_code = engine.render_carousel_component(carousel)
 Combine component creation with an agent workflow:
 
 ```python
-from pydantic_ai import Agent
-from charts.toolset import create_ui_toolset
-from charts.engines.shadcn import Shadcn
+import asyncio
 
+from pydantic_ai import Agent
+from charts.toolset import create_ui_toolset, EngineDeps
+from charts.engines.shadcn import Shadcn, SHADCN_TOOLSET_PROMPT
+from charts.utils.helpers import get_ui_component
+
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
+# 1. Setup engine and toolset
 engine = Shadcn(return_mode='tsx')
+toolset = create_ui_toolset()
+deps = EngineDeps(engine=engine)
+
+# 2. Setup agent
 agent = Agent(
-    'openai:gpt-5.1',
-    tools=create_ui_toolset(engine),
+    'openai:gpt-4o',
+    system_prompt=SHADCN_TOOLSET_PROMPT,
+    toolsets=[toolset],
+    deps_type=EngineDeps
 )
 
-# Run the agent with a request for multiple components
-result = await agent.run('Create a dashboard showing: 1) A bar chart of sales by region, 2) A table of top products')
-
-print(result.output)
+# 3. Run the agent
+# result = asyncio.run(agent.run('Create a dashboard with sales chart', deps=deps))
+# component = get_ui_component(result)
+# print(component)
 ```

@@ -7,7 +7,7 @@ Configure color schemes for light and dark modes.
 Base color palette object with the following default values:
 
 | Property | Default | Description |
-|----------|---------|-------------|
+| ---------- | --------- | ------------- |
 | `primary` | `#858586` | Primary brand color |
 | `secondary` | `#0FB1E2` | Secondary accent color |
 | `tertiary` | `#E9E040` | Tertiary highlight color |
@@ -50,23 +50,23 @@ palette = ShadcnColorPalette()
 ## Custom Theme Example
 
 ```python
-from charts.base_types import BaseColors, BaseColorPalette
 from charts.engines.shadcn.config import (
-    ShadcnUIConfig, ShadcnLibraryConfig, ShadcnAgentUIConfig
+    ShadcnUIConfig, ShadcnLibraryConfig, ShadcnAgentUIConfig,
+    ShadcnColorPalette, ShadcnLightColors, ShadcnDarkColors
 )
 
 # Create custom palette
-custom_palette = BaseColorPalette(
-    light=BaseColors(
+custom_palette = ShadcnColorPalette(
+    light=ShadcnLightColors(
         primary="#6366f1",  # Indigo
         secondary="#ec4899",  # Pink
         background="#ffffff",
         text="#1e293b"
     ),
-    dark=BaseColors(
+    dark=ShadcnDarkColors(
         primary="#818cf8",  # Lighter Indigo
-        secondary="#f472b6",  // Lighter Pink
-        background="#0f172a",  // Slate 900
+        secondary="#f472b6",  # Lighter Pink
+        background="#0f172a",  # Slate 900
         text="#f1f5f9"
     )
 )

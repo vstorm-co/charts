@@ -183,9 +183,6 @@ nav:
       - engines/templates.md
   - Integrations:
       - integrations/pydantic-ai.md
-      - integrations/mcp-server.md
-      - integrations/api-server.md
-      - integrations/frontend.md
   - Examples:
       - examples/basic-usage.md
       - examples/agent-workflows.md

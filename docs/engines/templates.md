@@ -7,7 +7,7 @@ The library uses Jinja2 templates for rendering components.
 Located in [`src/charts/templates/shadcn/`](https://github.com/vstorm-co/charts/tree/main/src/charts/templates/shadcn):
 
 | File | Purpose |
-|------|---------|
+| ------ | --------- |
 | `table.py` | Table with headers, rows, footer |
 | `chart.py` | Bar, Line, Pie, Area, Radar charts |
 | `accordion.py` | Collapsible accordion panels |
@@ -19,14 +19,14 @@ Located in [`src/charts/templates/shadcn/`](https://github.com/vstorm-co/charts/
 ### Common Variables
 
 | Variable | Type | Description |
-|----------|------|-------------|
+| ---------- | ------ | ------------- |
 | `title` | str | Component title |
 | `description` | str | Component description |
 
 ### Table Template Variables
 
 | Variable | Type | Description |
-|----------|------|-------------|
+| ---------- | ------ | ------------- |
 | `items_json` | str | JSON array of row data |
 | `headers` | list[str] | Column headers |
 | `caption` | str | Table caption |
@@ -36,7 +36,7 @@ Located in [`src/charts/templates/shadcn/`](https://github.com/vstorm-co/charts/
 ### Chart Template Variables
 
 | Variable | Type | Description |
-|----------|------|-------------|
+| ---------- | ------ | ------------- |
 | `chart_config_json` | str | JSON config mapping keys to labels/colors |
 | `chart_data_json` | str | JSON array of data points |
 | `title` | str | Chart title |
@@ -48,14 +48,14 @@ Located in [`src/charts/templates/shadcn/`](https://github.com/vstorm-co/charts/
 ### Accordion Template Variables
 
 | Variable | Type | Description |
-|----------|------|-------------|
+| ---------- | ------ | ------------- |
 | `items_json` | str | JSON array of accordion items |
 | `list_type` | str | "single" or "multiple" |
 
 ### Carousel Template Variables
 
 | Variable | Type | Description |
-|----------|------|-------------|
+| ---------- | ------ | ------------- |
 | `items_json` | str | JSON array of carousel items |
 | `align` | str \| None | Alignment setting |
 | `loop` | str \| None | Loop mode ("true"/"false") |
@@ -113,14 +113,4 @@ from jinja2 import Template
 template = Template("Hello {{ name }}")
 output = template.render(name="World")
 # Output: "Hello World"
-```
-
-In the Shadcn engine, templates are rendered using:
-
-```python
-return template.render(
-    items_json=items_json,
-    headers=headers,
-    caption=table.caption
-)
 ```

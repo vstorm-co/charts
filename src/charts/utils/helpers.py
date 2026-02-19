@@ -9,7 +9,7 @@ def _get_metadata_from_result(result: AgentRunResult) -> dict[str, Any]:
     """Extract metadata from the agent result."""
     try:
         messages = json.loads(result.all_messages_json())
-        for msg in messages:
+        for msg in reversed(messages):
             if "parts" in msg:
                 for part in msg["parts"]:
                     if "metadata" in part and part["metadata"]:

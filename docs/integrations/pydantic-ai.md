@@ -10,21 +10,26 @@ The `FunctionToolset` provides UI component creation tools for your agent.
 
 ```python
 from pydantic_ai import Agent
-from charts.toolset import create_ui_toolset
+from charts.toolset import create_ui_toolset, EngineDeps
 from charts.engines.shadcn import Shadcn
 
-# Create engine with TSX output
-engine = Shadcn(return_mode='tsx')
+# Create engine and toolset
+engine = Shadcn(return_mode='json')
+toolset = create_ui_toolset()
+deps = EngineDeps(engine=engine)
 
-# Create agent with UI tools
+# Create agent with UI toolset
 agent = Agent(
     'openai:gpt-5.1',
-    tools=create_ui_toolset(engine)
+    toolsets=[toolset],
+    deps_type=EngineDeps
 )
 
-# Run the agent
-result = await agent.run('Create a bar chart showing monthly sales')
-print(result.output)  # ToolReturn with generated component
+# Run the agent with dependencies
+# result = await agent.run('Create a bar chart showing monthly sales', deps=deps)
+
+# Extract the component
+# component = get_ui_component(result)
 ```
 
 ## Agent System Prompt
@@ -53,34 +58,37 @@ Always aim for high-quality data and sensible defaults for colors and labels.
 
 ```python
 from pydantic_ai import Agent
-from charts.toolset import create_ui_toolset
+from charts.toolset import create_ui_toolset, EngineDeps
 from charts.engines.shadcn import Shadcn, SHADCN_TOOLSET_PROMPT
 
 engine = Shadcn(return_mode='tsx')
+toolset = create_ui_toolset()
+deps = EngineDeps(engine=engine)
 
 agent = Agent(
     'openai:gpt-5.1',
     system_prompt=SHADCN_TOOLSET_PROMPT,
-    tools=create_ui_toolset(engine)
+    toolsets=[toolset],
+    deps_type=EngineDeps
 )
 
-result = await agent.run('Create a dashboard with a chart and table')
+# result = await agent.run('Create a dashboard with a chart and table', deps=deps)
+# component = get_ui_component(result)
 ```
 
 ## Tool Return Structure
 
-Each tool returns a `ToolReturn`:
+Each tool returns a `ToolReturn`. The generated UI component is stored in the `metadata`:
 
 ```python
-ToolReturn(
-    return_value="Successfully created table: Monthly Sales",
-    metadata={
-        "ui_component": "<Table>...</Table>",  # Rendered TSX
-        "config": {...},                      # Agent configuration
-        "component_type": "table",            # Component type
-        "data_summary": {"rows": 12}          # Data summary
-    }
-)
+# The ToolReturn structure
+# return_value: "Successfully created table: Monthly Sales"
+# metadata: {
+#     "ui_component": "<Table>...</Table>",  # Rendered TSX or JSON
+#     "config": {...},                      # UI configuration
+#     "component_type": "table",            # Component type
+#     "data_summary": {"rows": 12}          # Data summary
+# }
 ```
 
 ## Complete Example
@@ -88,36 +96,32 @@ ToolReturn(
 ```python
 import asyncio
 from pydantic_ai import Agent
-from charts.toolset import create_ui_toolset
+from charts.toolset import create_ui_toolset, EngineDeps
 from charts.engines.shadcn import Shadcn
-from charts.types.shadcn.chart import Chart, ChartConfig, ChartData
+from charts.utils.helpers import get_ui_component, get_config_data
 
 async def main():
     engine = Shadcn(return_mode='tsx')
+    toolset = create_ui_toolset()
+    deps = EngineDeps(engine=engine)
 
     agent = Agent(
         'openai:gpt-5.1',
-        tools=create_ui_toolset(engine)
+        toolsets=[toolset],
+        deps_type=EngineDeps
     )
 
     # Ask for a chart
-    result = await agent.run('Show me a line chart of website traffic')
+    result = await agent.run('Show me a line chart of website traffic', deps=deps)
 
-    print(result.output.return_value)
-    print(result.output.metadata['ui_component'])
+    # Access metadata for the UI component
+    component = get_ui_component(result)
 
-asyncio.run(main())
-```
+    # Extract the UI config
+    config_data = get_config_data(result)
 
-## Custom Output Types
+    # For FunctionToolset, the output might be in messages if using multiple tools
+    # or you can inspect result.all_messages()
 
-You can also specify custom output types:
-
-```python
-from charts.types.shadcn.chart import ChartToolOutput
-
-result = await agent.run(
-    'Create a pie chart of browser usage',
-    output_type=ChartToolOutput
-)
+# asyncio.run(main())
 ```

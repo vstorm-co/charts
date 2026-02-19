@@ -5,7 +5,7 @@ Configure visual appearance of components.
 ## BaseUIConfig
 
 | Property | Type | Default | Description |
-|----------|------|---------|-------------|
+| ---------- | ------ | --------- | ------------- |
 | `color_palette` | BaseColorPalette | Required | Light/dark color scheme |
 | `mode` | "light" \| "dark" \| "system" | "system" | Theme mode |
 | `radius` | float | 0.5 | Border radius multiplier (0=sharp, 1+=rounded) |
@@ -16,7 +16,7 @@ Configure visual appearance of components.
 The `radius` property controls border rounding:
 
 | Value | Effect |
-|-------|--------|
+| ------- | -------- |
 | `0` | Sharp corners |
 | `0.5` | Slightly rounded (default) |
 | `1` | Fully rounded |

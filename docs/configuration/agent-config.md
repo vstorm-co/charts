@@ -32,9 +32,9 @@ This creates:
 from charts.engines.shadcn.config import (
     ShadcnAgentUIConfig,
     ShadcnUIConfig,
-    ShadcnLibraryConfig,
-    ShadcnColorPalette
+    ShadcnLibraryConfig
 )
+from charts.engines.shadcn import ShadcnColorPalette
 
 config = ShadcnAgentUIConfig(
     theme=ShadcnUIConfig(
@@ -71,15 +71,18 @@ engine = Shadcn(
 
 ```python
 from pydantic_ai import Agent
-from charts.toolset import create_ui_toolset
+from charts.toolset import create_ui_toolset, EngineDeps
+
+toolset = create_ui_toolset()
+deps = EngineDeps(engine=engine)
 
 agent = Agent(
-    'openai:gpt-5.1',
-    tools=create_ui_toolset(engine),
-    deps_type=type('Deps', (), {'config': config})
+    'openai:gpt-4o',
+    toolsets=[toolset],
+    deps_type=EngineDeps
 )
 
-result = await agent.run('Create a dashboard')
+# result = await agent.run('Create a dashboard', deps=deps)
 ```
 
 ## Helper Method: get_active_colors()

@@ -5,10 +5,8 @@ The `Table` component displays data in a grid format with optional footer calcul
 ## Properties
 
 | Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `data` | list[TableData] | Yes | Row data as dictionaries |
-| `headers` | list[str] | Yes | Column header names (keys) |
-| `column_labels` | dict | No | Human-readable column names |
+| ---------- | ------ | ---------- | ------------- |
+| `table_data` | TableData | Yes | Headers and row data |
 | `caption` | str | Yes | Table caption |
 | `footer` | TableFooter | No | Optional summary row |
 
@@ -17,10 +15,10 @@ The `Table` component displays data in a grid format with optional footer calcul
 Optional footer for calculations.
 
 | Property | Type | Required | Description |
-|----------|------|----------|-------------|
+| ---------- | ------ | ---------- | ------------- |
 | `keyword` | str | Yes | Summary label (e.g., "Total", "Estimated") |
 | `header_to_summarize` | str | Yes | Column header to calculate |
-| `value` | int \| float \| None | No | Pre-calculated value or None |
+| `value` | str \| int \| float \| None | No | Pre-calculated value or None |
 
 ## Examples
 
@@ -30,17 +28,14 @@ Optional footer for calculations.
 from charts.types.shadcn.table import Table, TableData
 
 table = Table(
-    data=[
-        TableData(name='Product A', price=29.99, stock=100),
-        TableData(name='Product B', price=49.99, stock=50),
-        TableData(name='Product C', price=19.99, stock=200),
-    ],
-    headers=['name', 'price', 'stock'],
-    column_labels={
-        'name': 'Product Name',
-        'price': 'Price ($)',
-        'stock': 'Stock'
-    },
+    table_data=TableData(
+        headers=['name', 'price', 'stock'],
+        rows=[
+            ('Product A', 29.99, 100),
+            ('Product B', 49.99, 50),
+            ('Product C', 19.99, 200),
+        ]
+    ),
     caption='Product Inventory'
 )
 ```
@@ -51,18 +46,19 @@ table = Table(
 from charts.types.shadcn.table import Table, TableData, TableFooter
 
 table = Table(
-    data=[
-        TableData(product='Widget', cost=10.00, quantity=5),
-        TableData(product='Gadget', cost=25.00, quantity=3),
-        TableData(product='Gizmo', cost=5.00, quantity=10),
-    ],
-    headers=['product', 'cost', 'quantity'],
-    column_labels={'product': 'Product', 'cost': 'Cost', 'quantity': 'Qty'},
+    table_data=TableData(
+        headers=['product', 'cost', 'quantity'],
+        rows=[
+            ('Widget', 10.00, 5),
+            ('Gadget', 25.00, 3),
+            ('Gizmo', 5.00, 10),
+        ]
+    ),
     caption='Order Summary',
     footer=TableFooter(
         keyword='Total Items',
         header_to_summarize='quantity',
-        value=None  # Calculated automatically
+        value=None
     )
 )
 ```
@@ -70,14 +66,17 @@ table = Table(
 ### Table with Pre-calculated Footer
 
 ```python
+from charts.types.shadcn.table import Table, TableData, TableFooter
+
 table = Table(
-    data=[
-        TableData(item='Laptop', price=999.99),
-        TableData(item='Mouse', price=29.99),
-        TableData(item='Keyboard', price=79.99),
-    ],
-    headers=['item', 'price'],
-    column_labels={'item': 'Item', 'price': 'Price'},
+    table_data=TableData(
+        headers=['item', 'price'],
+        rows=[
+            ('Laptop', 999.99),
+            ('Mouse', 29.99),
+            ('Keyboard', 79.99),
+        ]
+    ),
     caption='Shopping Cart',
     footer=TableFooter(
         keyword='Total',

@@ -5,10 +5,10 @@ The `Card` component is a container with title, description, content, and footer
 ## Properties
 
 | Property | Type | Required | Description |
-|----------|------|----------|-------------|
+| ---------- | ------ | ---------- | ------------- |
 | `title` | str | Yes | Card title |
 | `description` | str | Yes | Subtitle or description |
-| `content` | str \| BaseComponent | No | Main content (text or nested component) |
+| `content` | str \| BaseComponent \| list[BaseComponent] | No | Main content |
 | `footer` | str | Yes | Footer text |
 
 ## Examples
@@ -31,18 +31,20 @@ card = Card(
 ```python
 from charts.types.shadcn.card import Card
 from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartMetadata
+from charts.base_types import BaseChartTypes
 
 # Create a chart
 chart = Chart(
-    data=[
-        ChartData(month='Jan', sales=400),
-        ChartData(month='Feb', sales=300),
-        ChartData(month='Mar', sales=600),
-    ],
-    config=ChartConfig(config={
+    chart_data=ChartData(data=[
+        {"month": "Jan", "sales": 400},
+        {"month": "Feb", "sales": 300},
+        {"month": "Mar", "sales": 600},
+    ]),
+    chart_config=ChartConfig(config={
         'sales': {'label': 'Sales ($)', 'color': '#858586'}
     }),
     metadata=ChartMetadata(title='Sales Trend'),
+    chart_type=BaseChartTypes.line,
     x_axis_key='month'
 )
 
@@ -52,40 +54,5 @@ card = Card(
     description='Quarterly sales overview',
     content=chart,
     footer='Source: Sales Database'
-)
-```
-
-### Card with Multiple Components
-
-```python
-from charts.types.shadcn.card import Card
-from charts.types.shadcn.table import Table, TableData
-
-table = Table(
-    data=[
-        TableData(name='Product A', price=29.99),
-        TableData(name='Product B', price=49.99),
-    ],
-    headers=['name', 'price'],
-    column_labels={'name': 'Name', 'price': 'Price'},
-    caption='Top Products'
-)
-
-card = Card(
-    title='Top Selling Products',
-    description='Best performers this month',
-    content=[table, 'Other widgets would go here'],
-    footer='Last updated: 2024-03-15'
-)
-```
-
-### Status Card
-
-```python
-card = Card(
-    title='Active Users',
-    description='Current active session count',
-    content='1,234',
-    footer= 'Status: Running'
 )
 ```
