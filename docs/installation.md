@@ -74,15 +74,14 @@ OPENAI_API_KEY=your-api-key-here
 Create a test file `test_charts.py`:
 
 ```python
-from charts import Chart, ChartConfig, ChartData
+# Create a simple card component
+from charts.types.shadcn.card import Card
 
-# Create a simple chart
-chart = Chart(
-    data=[
-        ChartData(name='Jan', value=40),
-        ChartData(name='Feb', value=30),
-    ],
-    config=ChartConfig(type='bar', x_key='name', y_keys=['value'])
+card = Card(
+    title="Random Space Fact",
+    description="A quick, fascinating tidbit about our universe.",
+    content="Neutron stars are so dense that a sugar-cube-sized amount of their material would weigh about 1 billion tons on Earth.",
+    footer="Source: NASA & astrophysics research summaries"
 )
 
 print(f"Created {chart.component_type} component")
@@ -91,7 +90,7 @@ print(f"Created {chart.component_type} component")
 Run it:
 
 ```bash
-python test_charts.py
+uv run test_charts.py
 ```
 
 ## Troubleshooting

@@ -55,14 +55,16 @@ The library follows a layered architecture:
 
 1. **Base Types** - Abstract base classes for all components
 2. **Types** - Concrete Pydantic models with validation
-3. **Engine** - Converts models to TSX via Jinja2 templates
+3. **Engine** - Converts models to TSX via Jinja2 templates or returns a JSON object for translation for frontend services
 4. **Templates** - Jinja2 templates generating React components
 
 ## Installation
 
 ```bash
+# Use pip installer
 pip install charts
-# Or with uv
+
+# Or uv (which we recommend)
 uv add charts
 ```
 
@@ -83,7 +85,6 @@ Full API documentation available in the [API Reference](api/index.md) section.
 ## Integration Guides
 
 - [Pydantic AI](integrations/pydantic-ai.md) - Agent setup
-- [MCP Server](integrations/mcp-server.md) - Model Context Protocol
 - [FastAPI Server](integrations/api-server.md) - REST API
 - [Frontend](integrations/frontend.md) - Using generated components
 
