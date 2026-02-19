@@ -435,7 +435,6 @@ class TestCarouselOrientation:
 
     def test_orientation_values(self):
         """Test orientation values."""
-        from charts.base_types import CarouselOrientation
 
         assert CarouselOrientation.vertical.value == "vertical"
         assert CarouselOrientation.horizontal.value == "horizontal"
@@ -482,8 +481,6 @@ class TestBaseCarouselConfig:
 
     def test_custom_config(self):
         """Test custom carousel config."""
-        from charts.base_types import CarouselOrientation
-
         config = BaseCarouselConfig(
             align=None,
             loop="false",
@@ -528,12 +525,12 @@ class TestBaseToolOutput:
             text="Some text",
             message="Message",
             ui=component,
-            ui_element="<div>Element</div>",
+            ui_component="<div>Element</div>",
         )
         assert output.text == "Some text"
         assert output.message == "Message"
         assert isinstance(output.ui, BaseComponent)
-        assert output.ui_element == "<div>Element</div>"
+        assert output.ui_component == "<div>Element</div>"
         assert output.data is None
 
     def test_output_with_data(self):
@@ -541,7 +538,7 @@ class TestBaseToolOutput:
         component = BaseComponent(component_type="test")
         output = BaseToolOutput(
             ui=component,
-            ui_element="<div>Element</div>",
+            ui_component="<div>Element</div>",
             data={"key": "value", "count": 42},
         )
         assert output.data == {"key": "value", "count": 42}
@@ -552,7 +549,7 @@ class TestBaseToolOutput:
         component2 = BaseComponent(component_type="test2")
         output = BaseToolOutput(
             ui=[component1, component2],
-            ui_element="<div>Elements</div>",
+            ui_component="<div>Elements</div>",
         )
         assert isinstance(output.ui, list)
         assert len(output.ui) == 2

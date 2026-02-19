@@ -18,10 +18,9 @@ from loguru import logger
 from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
 
-from charts.engines.shadcn import Shadcn
-from charts.engines.shadcn.config import ShadcnAgentUIConfig
+from charts.engines.shadcn import SHADCN_TOOLSET_PROMPT, Shadcn
 from charts.protocol import EngineProtocol
-from charts.toolset import SHADCN_TOOLSET_PROMPT, EngineDeps, create_ui_toolset
+from charts.toolset import EngineDeps, create_ui_toolset
 from charts.types.shadcn.chart import ChartData
 from charts.types.shadcn.table import TableData
 
@@ -119,8 +118,7 @@ agent = Agent(
 
 # Toolset usage
 toolset = create_ui_toolset()
-config = ShadcnAgentUIConfig()
-engine = Shadcn("json", config=config)
+engine = Shadcn("json")
 deps = EngineDeps(engine=engine)
 
 toolset_agent = Agent(
@@ -181,7 +179,7 @@ async def query_data_for_pie_chart(ctx: RunContext[EngineDeps]) -> ChartData:
 #     return ToolReturn(
 #         return_value=f"Successfully created table: {caption}",
 #         metadata={
-#             "ui_element": component_code,
+#             "ui_component": component_code,
 #             "component_type": table_obj.component_type,
 #             "data_summary": {"rows": len(table_data.rows)}
 #         }
@@ -202,7 +200,7 @@ async def query_data_for_pie_chart(ctx: RunContext[EngineDeps]) -> ChartData:
 #     return ToolReturn(
 #         return_value=f"Successfully created accordion with {len(accordions)} elements",
 #         metadata={
-#             "ui_element": component_code,
+#             "ui_component": component_code,
 #             "component_type": accordion_obj.component_type,
 #             "data_summary": {"num_elements": len(accordions)}
 #         }
@@ -227,7 +225,7 @@ async def query_data_for_pie_chart(ctx: RunContext[EngineDeps]) -> ChartData:
 #     return ToolReturn(
 #         return_value=f"Successfully created card component with title: {card_obj.title}",
 #         metadata={
-#             "ui_element": component_code,
+#             "ui_component": component_code,
 #             "component_type": card_obj.component_type,
 #             "data_summary": {"content_type": f"{type(card_obj.content)}"}
 #         }
@@ -265,7 +263,7 @@ async def query_data_for_pie_chart(ctx: RunContext[EngineDeps]) -> ChartData:
 #                f"Successfully created carousel component with"
 #                "{len(carousel_items)} elements."),
 #         metadata={
-#             "ui_element": component_code,
+#             "ui_component": component_code,
 #             "component_type": carousel_obj.component_type,
 #             "data_summary": {"num_elements": len(carousel_items)}
 #         }
@@ -325,7 +323,7 @@ async def query_data_for_pie_chart(ctx: RunContext[EngineDeps]) -> ChartData:
 #     return ToolReturn(
 #         return_value=f"Successfully created chart: {chart_obj.metadata.title}",
 #         metadata={
-#             "ui_element": component_code,
+#             "ui_component": component_code,
 #             "component_type": chart_obj.component_type,
 #             "data_summary": {"num_elements": (len(chart_data.data))}
 #         }
@@ -347,17 +345,17 @@ def update_status(status: str, last_updated: str) -> None:
         json.dump(current_status, f)
 
 
-def update_component(ui_element: str) -> None:
+def update_component(ui_component: str) -> None:
     """Update the GeneratedComponent.tsx file."""
     component_path = Path(__file__).parent / "src" / "GeneratedComponent.tsx"
     os.makedirs(component_path.parent, exist_ok=True)
     with open(component_path, "w") as f:
-        f.write(ui_element)
+        f.write(ui_component)
 
 
 async def generate_component(prompt: str) -> tuple[str, str]:
     """Generate a component based on the prompt.
-    Returns (status_message, ui_element)
+    Returns (status_message, ui_component)
     """
     logger.info(f"Received prompt: {prompt[:100]}{'...' if len(prompt) > 100 else ''}")
 
@@ -379,10 +377,10 @@ async def generate_component(prompt: str) -> tuple[str, str]:
                         if (
                             "metadata" in part
                             and part["metadata"]
-                            and "ui_element" in part["metadata"]
+                            and "ui_component" in part["metadata"]
                         ):
-                            # if "ui_element" in part["metadata"].keys():
-                            ui_element = part["metadata"]["ui_element"]
+                            # if "ui_component" in part["metadata"].keys():
+                            ui_component = part["metadata"]["ui_component"]
                             config = part["metadata"].get("config", {})
 
                 if "usage" in msg:
@@ -401,17 +399,17 @@ async def generate_component(prompt: str) -> tuple[str, str]:
             # 'rejected_prediction_tokens': 0},
             # requests=3, tool_calls=2)
 
-            # ui_element = result.output.metadata.ui_element or ""
+            # ui_component = result.output.metadata.ui_component or ""
             status_msg = result.output or "Component generated successfully"
 
             # Log the output
             logger.info("Generated component successfully")
             logger.info(f"Status message: {status_msg}")
             logger.info(f"Config used: {config}")
-            logger.info(f"UI element length: {len(ui_element)} characters")
+            logger.info(f"UI element length: {len(ui_component)} characters")
             logger.info(f"Usage: {result.usage()}")
 
-            return status_msg, ui_element
+            return status_msg, ui_component
         logger.warning("No output received from agent")
         return "No output received", ""
 
@@ -432,10 +430,10 @@ async def handle_generate_request(prompt: str) -> dict:
     update_status("Generating...", last_updated)
 
     try:
-        status_msg, ui_element = await generate_component(prompt)
+        status_msg, ui_component = await generate_component(prompt)
 
-        if ui_element:
-            update_component(ui_element)
+        if ui_component:
+            update_component(ui_component)
             status = "Rendered Successfully"
             logger.info("Component updated successfully")
         else:

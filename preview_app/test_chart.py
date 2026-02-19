@@ -51,10 +51,10 @@ async def config(ctx: RunContext) -> ChartConfig:
 
 
 async def send_component(result: ChartToolOutput) -> None:
-    ui_element = result.ui_element
+    ui_component = result.ui_component
 
     with open("preview_app/src/GeneratedComponent.tsx", "w") as f:
-        f.write(ui_element)
+        f.write(ui_component)
 
     with open("preview_app/src/status.json", "w") as f:
         json.dump({"lastUpdated": time.strftime("%H:%M:%S"), "status": "Rendered Successfully"}, f)
@@ -84,7 +84,7 @@ async def main() -> None:
 
     if result:
         ic(result.output.text)
-        ic(result.output.ui_element)
+        ic(result.output.ui_component)
 
     await send_component(result.output)
 

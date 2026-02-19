@@ -5,7 +5,7 @@ The master configuration for AI agent component generation.
 ## BaseAgentUIConfig
 
 | Property | Type | Default | Description |
-|----------|------|---------|-------------|
+| ---------- | ------ | --------- | ------------- |
 | `theme` | BaseUIConfig | Required | Visual theme settings |
 | `lib` | BaseLibraryConfig | Required | Library-specific settings |
 | `overrides` | dict[str, Any] | {} | Global component overrides |

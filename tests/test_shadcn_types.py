@@ -2,7 +2,7 @@
 
 import pytest
 
-from charts.base_types import BaseChartTypes
+from charts.base_types import BaseChartTypes, CarouselOrientation
 from charts.types.shadcn.accordion import Accordion, AccordionItem
 from charts.types.shadcn.card import Card
 from charts.types.shadcn.carousel import Carousel, CarouselConfig, CarouselItem
@@ -317,7 +317,6 @@ class TestCarouselConfig:
 
     def test_custom_config(self):
         """Test custom carousel configuration."""
-        from charts.base_types import CarouselOrientation
 
         config = CarouselConfig(
             align=None,

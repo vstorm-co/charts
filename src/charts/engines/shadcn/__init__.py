@@ -6,7 +6,7 @@ from .config import (
     ShadcnLightColors,
     ShadcnUIConfig,
 )
-from .shadcn import Shadcn
+from .shadcn import SHADCN_TOOLSET_PROMPT, Shadcn
 
 __all__ = [
     "Shadcn",
@@ -16,4 +16,5 @@ __all__ = [
     "ShadcnLibraryConfig",
     "ShadcnLightColors",
     "ShadcnUIConfig",
+    "SHADCN_TOOLSET_PROMPT",
 ]

@@ -19,6 +19,7 @@ from charts.base_types import (
     BaseTableData,
     CarouselOrientation,
 )
+from charts.engines.shadcn import Shadcn
 from charts.protocol import EngineProtocol
 
 
@@ -93,7 +94,6 @@ class TestShadcnImplementation:
     @pytest.mark.asyncio
     async def test_shadcn_implements_render_table(self):
         """Test that Shadcn implements render_table_component."""
-        from charts.engines.shadcn import Shadcn
 
         shadcn = Shadcn("tsx")
         assert hasattr(shadcn, "render_table_component")
@@ -109,7 +109,6 @@ class TestShadcnImplementation:
     @pytest.mark.asyncio
     async def test_shadcn_implements_render_accordion(self):
         """Test that Shadcn implements render_accordion_component."""
-        from charts.engines.shadcn import Shadcn
 
         shadcn = Shadcn("tsx")
         assert hasattr(shadcn, "render_accordion_component")
@@ -132,7 +131,6 @@ class TestShadcnImplementation:
     @pytest.mark.asyncio
     async def test_shadcn_implements_render_card(self):
         """Test that Shadcn implements render_card_component."""
-        from charts.engines.shadcn import Shadcn
 
         shadcn = Shadcn("tsx")
         assert hasattr(shadcn, "render_card_component")
@@ -150,7 +148,6 @@ class TestShadcnImplementation:
     @pytest.mark.asyncio
     async def test_shadcn_implements_render_carousel(self):
         """Test that Shadcn implements render_carousel_component."""
-        from charts.engines.shadcn import Shadcn
 
         shadcn = Shadcn("tsx")
         assert hasattr(shadcn, "render_carousel_component")
@@ -166,7 +163,6 @@ class TestShadcnImplementation:
     @pytest.mark.asyncio
     async def test_shadcn_implements_render_chart(self):
         """Test that Shadcn implements render_chart_component."""
-        from charts.engines.shadcn import Shadcn
 
         shadcn = Shadcn("tsx")
         assert hasattr(shadcn, "render_chart_component")

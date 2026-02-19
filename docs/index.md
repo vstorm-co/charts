@@ -5,15 +5,13 @@ Charts is a Python middleware library that connects Agentic AI libraries (specif
 ## Features
 
 - **Pydantic Models** - Type-safe component definitions with validation
-- **Engine Abstraction** - Render components to different formats (TSX, JSON)
-- **MCP Server** - Model Context Protocol integration for AI agents
-- **FastAPI Integration** - REST API for component generation
+- **Engine Abstraction** - Render components to different formats (currently supporting TSX & JSON)
 - **Jinja2 Templates** - Flexible React/TypeScript code generation
 
 ## Supported Components
 
 | Component | Description |
-|-----------|-------------|
+| ----------- | ------------- |
 | Chart | Bar, Line, Pie, Area, Radar charts via Recharts |
 | Table | Data grid with headers, rows, and footer calculations |
 | Card | Container with title, description, content, footer |
@@ -24,18 +22,31 @@ Charts is a Python middleware library that connects Agentic AI libraries (specif
 
 ```python
 from pydantic_ai import Agent
-from charts.toolset import create_ui_toolset
-from charts.engines.shadcn import Shadcn
+from charts.toolset import create_ui_toolset, EngineDeps
+from charts.engines.shadcn import Shadcn, SHADCN_TOOLSET_PROMPT
+from charts.utils.helpers import get_ui_component
+from dotenv import load_dotenv
 
-# Create an agent with UI tools
+load_dotenv(override=True)
+
+toolset = create_ui_toolset()
+engine = Shadcn("json")
+deps = EngineDeps(engine=engine)
+
 agent = Agent(
-    'openai:gpt-5.1',
-    tools=create_ui_toolset(Shadcn())
+    "openai:gpt-5.1",
+    retries=3,
+    system_prompt=SHADCN_TOOLSET_PROMPT,
+    toolsets=[toolset],
+    deps_type=EngineDeps,
 )
 
-# Run the agent
-result = agent.run('Create a bar chart showing monthly sales')
-print(result.data)  # Generated Chart component
+result = agent.run_sync(
+    'Create a card with 3 random facts about space.',
+    deps=deps)
+
+# Get the JSON / TSX component from the result
+component = get_ui_component(result)  # Generated Chart component
 ```
 
 ## Architecture

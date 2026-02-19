@@ -18,6 +18,7 @@ from charts.base_types import (
     BaseTable,
     BaseTableData,
     BaseTableFooter,
+    CarouselOrientation,
 )
 from charts.engines.shadcn import Shadcn
 from charts.types.shadcn.accordion import Accordion, AccordionItem
@@ -339,7 +340,6 @@ class TestShadcnRenderCarouselComponent:
     @pytest.mark.asyncio
     async def test_render_carousel_vertical_orientation(self):
         """Test carousel rendering with vertical orientation."""
-        from charts.base_types import CarouselOrientation
 
         shadcn = Shadcn("tsx")
         items = [

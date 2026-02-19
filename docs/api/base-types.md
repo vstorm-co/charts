@@ -34,7 +34,6 @@ Base classes and configuration models for the Charts library.
       show_root_toc: true
       show_bases: true
 
-
 ### BaseColorPalette
 
 ::: charts.base_types.BaseColorPalette
@@ -79,14 +78,12 @@ Base classes and configuration models for the Charts library.
       show_root_toc: true
       show_bases: true
 
-
 ### BaseTable
 
 ::: charts.base_types.BaseTable
     options:
       show_root_toc: true
       show_bases: true
-
 
 ## Chart Types
 
@@ -96,7 +93,6 @@ Base classes and configuration models for the Charts library.
     options:
       show_root_toc: true
       show_bases: true
-
 
 ### BaseChartMetadata
 
@@ -111,7 +107,6 @@ Base classes and configuration models for the Charts library.
     options:
       show_root_toc: true
       show_bases: true
-
 
 ### BaseChartData
 
@@ -167,7 +162,6 @@ Base classes and configuration models for the Charts library.
     options:
       show_root_toc: true
       show_bases: true
-
 
 ### BaseCarouselItem
 

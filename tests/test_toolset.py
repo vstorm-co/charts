@@ -453,7 +453,7 @@ class TestCreateTableTool:
 
         assert result.return_value is not None
         assert "Successfully created table" in result.return_value
-        assert "ui_element" in result.metadata
+        assert "ui_component" in result.metadata
         assert result.metadata["component_type"] == "table"
 
     @pytest.mark.asyncio
@@ -482,10 +482,10 @@ class TestCreateTableTool:
         result = await table_tool.function(context, table)
 
         assert result.return_value is not None
-        assert "ui_element" in result.metadata
-        ui_element = result.metadata["ui_element"]
-        assert isinstance(ui_element, str)
-        assert "use client" in ui_element
+        assert "ui_component" in result.metadata
+        ui_component = result.metadata["ui_component"]
+        assert isinstance(ui_component, str)
+        assert "use client" in ui_component
 
 
 class TestCreateAccordionTool:
@@ -523,7 +523,7 @@ class TestCreateAccordionTool:
 
         assert result.return_value is not None
         assert "Successfully created an accordion" in result.return_value
-        assert "ui_element" in result.metadata
+        assert "ui_component" in result.metadata
 
     @pytest.mark.asyncio
     async def test_create_accordion_tool_tsx_mode(self):
@@ -556,9 +556,9 @@ class TestCreateAccordionTool:
         result = await accordion_tool.function(context, accordion)
 
         assert result.return_value is not None
-        ui_element = result.metadata["ui_element"]
-        assert isinstance(ui_element, str)
-        assert "Accordion" in ui_element
+        ui_component = result.metadata["ui_component"]
+        assert isinstance(ui_component, str)
+        assert "Accordion" in ui_component
 
 
 class TestCreateCardTool:
@@ -590,7 +590,7 @@ class TestCreateCardTool:
 
         assert result.return_value is not None
         assert "Successfully created card component" in result.return_value
-        assert "ui_element" in result.metadata
+        assert "ui_component" in result.metadata
 
     @pytest.mark.asyncio
     async def test_create_card_tool_tsx_mode(self):
@@ -617,9 +617,9 @@ class TestCreateCardTool:
         result = await card_tool.function(context, card)
 
         assert result.return_value is not None
-        ui_element = result.metadata["ui_element"]
-        assert isinstance(ui_element, str)
-        assert "Card" in ui_element
+        ui_component = result.metadata["ui_component"]
+        assert isinstance(ui_component, str)
+        assert "Card" in ui_component
 
 
 class TestCreateCarouselTool:
@@ -656,7 +656,7 @@ class TestCreateCarouselTool:
 
         assert result.return_value is not None
         assert "Successfully created carousel component" in result.return_value
-        assert "ui_element" in result.metadata
+        assert "ui_component" in result.metadata
 
     @pytest.mark.asyncio
     async def test_create_carousel_tool_tsx_mode(self):
@@ -688,9 +688,9 @@ class TestCreateCarouselTool:
         result = await carousel_tool.function(context, carousel)
 
         assert result.return_value is not None
-        ui_element = result.metadata["ui_element"]
-        assert isinstance(ui_element, str)
-        assert "Carousel" in ui_element
+        ui_component = result.metadata["ui_component"]
+        assert isinstance(ui_component, str)
+        assert "Carousel" in ui_component
 
 
 class TestCreateChartTool:
@@ -736,7 +736,7 @@ class TestCreateChartTool:
 
         assert result.return_value is not None
         assert "Successfully created chart" in result.return_value
-        assert "ui_element" in result.metadata
+        assert "ui_component" in result.metadata
 
     @pytest.mark.asyncio
     async def test_create_chart_tool_tsx_mode(self):
@@ -777,9 +777,9 @@ class TestCreateChartTool:
         result = await chart_tool.function(context, chart)
 
         assert result.return_value is not None
-        ui_element = result.metadata["ui_element"]
-        assert isinstance(ui_element, str)
-        assert "BarChart" in ui_element
+        ui_component = result.metadata["ui_component"]
+        assert isinstance(ui_component, str)
+        assert "BarChart" in ui_component
 
     @pytest.mark.asyncio
     async def test_create_pie_chart_tool(self):
@@ -820,6 +820,6 @@ class TestCreateChartTool:
         result = await chart_tool.function(context, chart)
 
         assert result.return_value is not None
-        ui_element = result.metadata["ui_element"]
-        assert isinstance(ui_element, str)
-        assert "PieChart" in ui_element
+        ui_component = result.metadata["ui_component"]
+        assert isinstance(ui_component, str)
+        assert "PieChart" in ui_component

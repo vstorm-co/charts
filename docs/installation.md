@@ -50,6 +50,7 @@ npx shadcn@latest add accordion button card carousel chart select table
 ```
 
 This installs:
+
 - `accordion` - For Accordion component
 - `button` - Required by many components
 - `card` - For Card component
@@ -98,11 +99,13 @@ python test_charts.py
 ### Module not found
 
 If you get `ModuleNotFoundError: No module named 'charts'`:
+
 - Ensure you're in the correct virtual environment
 - Check installation with `pip show charts` or `uv pip show charts`
 
 ### shadcn components missing
 
 If generated components don't render:
+
 - Verify shadcn is installed in your React project
 - Run `npx shadcn@latest add` for each required component

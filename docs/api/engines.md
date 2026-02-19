@@ -8,8 +8,6 @@ The Charts library includes the built-in Shadcn engine for TSX rendering.
 :members:
 :show-inheritance:
 
-```
-
 ### Constructor
 
 ```python

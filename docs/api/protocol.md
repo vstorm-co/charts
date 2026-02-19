@@ -8,8 +8,6 @@ The `EngineProtocol` defines the interface for component rendering engines.
 :members:
 :show-inheritance:
 
-```
-
 ### Required Methods
 
 #### render_table_component(table: BaseTable) -> str

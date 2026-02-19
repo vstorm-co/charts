@@ -105,7 +105,7 @@ class BaseToolOutput(CustomType):
     text: str | None = None
     message: str | None = None
     ui: BaseComponent | list[BaseComponent]
-    ui_element: str
+    ui_component: str
     data: dict[str, Any] | None = None
 
 

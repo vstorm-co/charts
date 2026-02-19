@@ -53,8 +53,8 @@ Always aim for high-quality data and sensible defaults for colors and labels.
 
 ```python
 from pydantic_ai import Agent
-from charts.toolset import create_ui_toolset, SHADCN_TOOLSET_PROMPT
-from charts.engines.shadcn import Shadcn
+from charts.toolset import create_ui_toolset
+from charts.engines.shadcn import Shadcn, SHADCN_TOOLSET_PROMPT
 
 engine = Shadcn(return_mode='tsx')
 
@@ -75,7 +75,7 @@ Each tool returns a `ToolReturn`:
 ToolReturn(
     return_value="Successfully created table: Monthly Sales",
     metadata={
-        "ui_element": "<Table>...</Table>",  # Rendered TSX
+        "ui_component": "<Table>...</Table>",  # Rendered TSX
         "config": {...},                      # Agent configuration
         "component_type": "table",            # Component type
         "data_summary": {"rows": 12}          # Data summary
@@ -104,7 +104,7 @@ async def main():
     result = await agent.run('Show me a line chart of website traffic')
 
     print(result.output.return_value)
-    print(result.output.metadata['ui_element'])
+    print(result.output.metadata['ui_component'])
 
 asyncio.run(main())
 ```

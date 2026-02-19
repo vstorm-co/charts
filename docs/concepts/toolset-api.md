@@ -52,7 +52,7 @@ Each tool returns a `ToolReturn` with metadata:
 ToolReturn(
     return_value="Successfully created chart: Monthly Sales",
     metadata={
-        "ui_element": "<BarChart>...</BarChart>",  # Rendered component
+        "ui_component": "<BarChart>...</BarChart>",  # Rendered component
         "config": {...},                            # Agent configuration
         "component_type": "chart",                  # Component type
         "data_summary": {"num_elements": 12}        # Data summary
@@ -63,8 +63,8 @@ ToolReturn(
 ## Tool Metadata Fields
 
 | Field | Description |
-|-------|-------------|
-| `ui_element` | Rendered component (TSX or JSON) |
+| ------- | ------------- |
+| `ui_component` | Rendered component (TSX or JSON) |
 | `config` | Full agent configuration dump |
 | `component_type` | One of: table, chart, card, accordion, carousel |
 | `data_summary` | Component-specific data summary |

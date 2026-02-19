@@ -166,7 +166,7 @@ async def create_card(
 @agent.tool
 async def finalize_card_creation(ctx: RunContext, ui: Card) -> CardOutputTool:
     """Finalize the creation of the card component by wrapping it in the output tool."""
-    return CardOutputTool(ui=ui, ui_element="")
+    return CardOutputTool(ui=ui, ui_component="")
 
 
 ### Accordion
@@ -189,7 +189,7 @@ async def merge_accordions(
 @agent.tool
 async def finalize_accordion_creation(ctx: RunContext, ui: AccordionList) -> AccordionToolOutput:
     """Finalize the creation of the accordion component by wrapping it in the output tool."""
-    return AccordionToolOutput(ui=ui, ui_element="")
+    return AccordionToolOutput(ui=ui, ui_component="")
 
 
 ### Carousel
@@ -221,7 +221,7 @@ async def create_complete_carousel(
 @agent.tool
 async def finalize_carousel_creation(ctx: RunContext, ui: Carousel) -> CarouselToolOutput:
     """Finalize the creation of the carousel component by wrapping it in the output tool."""
-    return CarouselToolOutput(ui=ui, ui_element="")
+    return CarouselToolOutput(ui=ui, ui_component="")
 
 
 # Table
@@ -245,7 +245,7 @@ async def create_table(
 @agent.tool
 async def finalize_table_creation(ctx: RunContext, ui: Table) -> TableOutputTool:
     """Finalize the creation of the table component by wrapping it in the output tool."""
-    return TableOutputTool(ui=ui, ui_element="")
+    return TableOutputTool(ui=ui, ui_component="")
 
 
 ### Charts
@@ -294,7 +294,7 @@ async def create_chart(
 @agent.tool
 async def finalize_chart_creation(ctx: RunContext, ui: Chart) -> ChartToolOutput:
     """Finalize the creation of the chart component by wrapping it in the output tool."""
-    return ChartToolOutput(ui=[ui], ui_element="")
+    return ChartToolOutput(ui=[ui], ui_component="")
 
 
 ### Methods
@@ -312,17 +312,17 @@ def update_status(status: str, last_updated: str) -> None:
         json.dump(current_status, f)
 
 
-def update_component(ui_element: str) -> None:
+def update_component(ui_component: str) -> None:
     """Update the GeneratedComponent.tsx file."""
     component_path = Path(__file__).parent / "src" / "GeneratedComponent.tsx"
     os.makedirs(component_path.parent, exist_ok=True)
     with open(component_path, "w") as f:
-        f.write(ui_element)
+        f.write(ui_component)
 
 
 async def generate_component(prompt: str) -> tuple[str, str]:
     """Generate a component based on the prompt.
-    Returns (status_message, ui_element)
+    Returns (status_message, ui_component)
     """
     logger.info(f"Received prompt: {prompt[:100]}{'...' if len(prompt) > 100 else ''}")
 
@@ -334,16 +334,16 @@ async def generate_component(prompt: str) -> tuple[str, str]:
 
         if result and result.output:
             print(result.output)
-            ui_element = result.output.ui_element or ""
+            ui_component = result.output.ui_component or ""
             status_msg = result.output.text or "Component generated successfully"
 
             # Log the output
             logger.info("Generated component successfully")
             logger.info(f"Status message: {status_msg}")
-            logger.info(f"UI element length: {len(ui_element)} characters")
+            logger.info(f"UI element length: {len(ui_component)} characters")
             logger.info(f"Usage: {result.usage()}")
 
-            return status_msg, ui_element
+            return status_msg, ui_component
         logger.warning("No output received from agent")
         return "No output received", ""
 
@@ -364,10 +364,10 @@ async def handle_generate_request(prompt: str) -> dict:
     update_status("Generating...", last_updated)
 
     try:
-        status_msg, ui_element = await generate_component(prompt)
+        status_msg, ui_component = await generate_component(prompt)
 
-        if ui_element:
-            update_component(ui_element)
+        if ui_component:
+            update_component(ui_component)
             status = "Rendered Successfully"
             logger.info("Component updated successfully")
         else:
