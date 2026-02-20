@@ -8,21 +8,23 @@ from importlib.metadata import version
 
 from charts.base_types import BaseComponent, CustomType
 from charts.engines.shadcn import Shadcn
-from charts.toolset import create_ui_toolset
+from charts.protocol import EngineProtocol
+from charts.toolset import EngineDeps, create_ui_toolset
 from charts.types.shadcn.chart import Chart, ChartConfig, ChartData
 
 __all__ = [
     # Base types
     "CustomType",
     "BaseComponent",
-    # "ToolOutput",
     # Chart Types
     "ChartData",
     "ChartConfig",
     "Chart",
     # Toolset
+    "EngineDeps",
     "create_ui_toolset",
     # Engines
+    "EngineProtocol",
     "Shadcn",
 ]
 

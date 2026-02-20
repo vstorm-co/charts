@@ -99,16 +99,6 @@ class BaseComponent(CustomType):
     component_type: str
 
 
-class BaseToolOutput(CustomType):
-    """Base class for all tool output data from Agents."""
-
-    text: str | None = None
-    message: str | None = None
-    ui: BaseComponent | list[BaseComponent]
-    ui_component: str
-    data: dict[str, Any] | None = None
-
-
 # --- Table Base Types ---
 class BaseTableData(CustomType):
     headers: list[str] = Field(..., description="A collection of headers corresponding to the data")

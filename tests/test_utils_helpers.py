@@ -46,16 +46,20 @@ class TestGetMetadataFromResult:
             "config": {"theme": "dark"},
         }
 
-    def test_returns_first_metadata_when_multiple_present(self):
-        """Test that first metadata is returned when multiple are present."""
+    def test_returns_first_metadata_from_last_message_when_multiple_messages(self):
+        """Test that metadata from the first part of the last message is returned."""
         messages = [
             {
                 "role": "assistant",
+                "parts": [{"type": "tool-call", "metadata": {"first_msg": "metadata"}}],
+            },
+            {
+                "role": "assistant",
                 "parts": [
-                    {"type": "tool-call", "metadata": {"first": "metadata"}},
-                    {"type": "tool-result", "metadata": {"second": "metadata"}},
+                    {"type": "tool-call", "metadata": {"second_msg": "metadata"}},
+                    {"type": "tool-result", "metadata": {"from_last_message": "data"}},
                 ],
-            }
+            },
         ]
 
         mock_result = Mock(spec=AgentRunResult)
@@ -63,7 +67,32 @@ class TestGetMetadataFromResult:
 
         metadata = _get_metadata_from_result(mock_result)
 
-        assert metadata == {"first": "metadata"}
+        # Because messages are reversed, the last message (index 1) is processed first.
+        # Within that message, parts are iterated in order, so the first part's metadata
+        # (tool-call with second_msg) is returned.
+        assert metadata == {"second_msg": "metadata"}
+
+    def test_returns_metadata_from_last_message_single_part(self):
+        """Test that metadata from last message is found when it has a single part."""
+        messages = [
+            {
+                "role": "assistant",
+                "parts": [{"type": "tool-call", "metadata": {"first": "metadata"}}],
+            },
+            {
+                "role": "assistant",
+                "parts": [{"type": "tool-result", "metadata": {"last": "metadata"}}],
+            },
+        ]
+
+        mock_result = Mock(spec=AgentRunResult)
+        mock_result.all_messages_json.return_value = json.dumps(messages)
+
+        metadata = _get_metadata_from_result(mock_result)
+
+        # With reversed iteration, the last message (index 1) is processed first,
+        # so its metadata should be returned.
+        assert metadata == {"last": "metadata"}
 
     def test_returns_empty_dict_when_no_metadata(self):
         """Test returns empty dict when no metadata in messages."""

@@ -21,7 +21,6 @@ from charts.base_types import (
     BaseTable,
     BaseTableData,
     BaseTableFooter,
-    BaseToolOutput,
     BaseUIConfig,
     CarouselOrientation,
     CustomType,
@@ -513,43 +512,3 @@ class TestBaseCarousel:
         assert carousel.component_type == "carousel"
         assert len(carousel.items) == 1
         assert carousel.config == config
-
-
-class TestBaseToolOutput:
-    """Tests for the BaseToolOutput class."""
-
-    def test_default_output(self):
-        """Test default tool output."""
-        component = BaseComponent(component_type="test")
-        output = BaseToolOutput(
-            text="Some text",
-            message="Message",
-            ui=component,
-            ui_component="<div>Element</div>",
-        )
-        assert output.text == "Some text"
-        assert output.message == "Message"
-        assert isinstance(output.ui, BaseComponent)
-        assert output.ui_component == "<div>Element</div>"
-        assert output.data is None
-
-    def test_output_with_data(self):
-        """Test tool output with data."""
-        component = BaseComponent(component_type="test")
-        output = BaseToolOutput(
-            ui=component,
-            ui_component="<div>Element</div>",
-            data={"key": "value", "count": 42},
-        )
-        assert output.data == {"key": "value", "count": 42}
-
-    def test_output_with_ui_list(self):
-        """Test tool output with list of UI components."""
-        component1 = BaseComponent(component_type="test1")
-        component2 = BaseComponent(component_type="test2")
-        output = BaseToolOutput(
-            ui=[component1, component2],
-            ui_component="<div>Elements</div>",
-        )
-        assert isinstance(output.ui, list)
-        assert len(output.ui) == 2
