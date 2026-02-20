@@ -1,3 +1,18 @@
+"""Base types and Pydantic models for UI component definitions.
+
+This module provides abstract base classes that define the structure for all
+UI components in the library. These base classes are extended by concrete
+implementations in the `charts.types.shadcn` subpackage.
+
+Key abstractions:
+- BaseComponent: Root interface for all UI components
+- BaseTable, BaseChart, BaseCard, BaseAccordion, BaseCarousel: Component-specific bases
+- BaseAgentUIConfig: Configuration model passed to AI agents for component creation
+
+All models use Pydantic's ConfigDict with arbitrary_types_allowed=True to support
+Jinja2 Template objects and other non-serializable types.
+"""
+
 from enum import Enum
 from typing import Any, Literal
 
@@ -123,6 +138,16 @@ class BaseTable(BaseComponent):
 
 # --- Chart Base Types ---
 class BaseChartTypes(str, Enum):
+    """Available chart types for data visualization.
+
+    Attributes:
+        bar: Bar chart for categorical comparisons
+        line: Line chart for time series trends
+        pie: Pie chart for proportional distribution
+        area: Area chart for stacked continuous data
+        radar: Radar chart for multivariate comparisons
+    """
+
     bar = "bar"
     line = "line"
     pie = "pie"
@@ -155,6 +180,13 @@ class BaseChart(BaseComponent):
 
 # --- Accordion Base Types ---
 class BaseAccordionTypes(str, Enum):
+    """Accordion expansion modes.
+
+    Attributes:
+        single: Only one accordion panel can be open at a time
+        multiple: Multiple accordion panels can be expanded simultaneously
+    """
+
     single = "single"
     multiple = "multiple"
 
@@ -190,6 +222,13 @@ class BaseCard(BaseComponent):
 
 # --- Carousel Base Types ---
 class CarouselOrientation(str, Enum):
+    """Carousel scrolling orientation.
+
+    Attributes:
+        horizontal: Items scroll left-to-right (default)
+        vertical: Items scroll top-to-bottom
+    """
+
     vertical = "vertical"
     horizontal = "horizontal"
 

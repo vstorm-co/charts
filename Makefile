@@ -18,18 +18,18 @@ test-fast:
 
 # Linting & Formatting
 lint:
-	uv run ruff check src
+	uv run ruff check src tests
 
 format:
-	uv run ruff format src
-	uv run ruff check --fix src
+	uv run ruff format src tests
+	uv run ruff check --fix src tests
 
 # Type Checking
 typecheck:
 	uv run pyright
 
 typecheck-mypy:
-	uv run mypy src
+	uv run mypy src tests
 
 # CI/Check All
 all: format lint typecheck-mypy typecheck test

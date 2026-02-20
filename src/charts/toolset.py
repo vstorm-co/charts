@@ -43,7 +43,20 @@ def create_ui_toolset(*, id: str | None = None) -> FunctionToolset[EngineDeps]:
     # Table
     @toolset.tool
     async def create_table(ctx: RunContext[EngineDeps], table: Table) -> ToolReturn:
-        """Create a Table component based on chosen translator engine."""
+        """Create a Table component based on chosen engine.
+
+        Args:
+            ctx: The RunContext containing engine dependencies (engine, id).
+            table: The Table model with data, caption, and optional footer.
+
+        Returns:
+            ToolReturn with:
+                - return_value: Success message string
+                - metadata.ui_component: Generated TSX or JSON component string
+                - metadata.config: Engine configuration used for rendering
+                - metadata.component_type: "table" component type identifier
+                - metadata.data_summary: Dict with row count information
+        """
         component = await ctx.deps.engine.render_table_component(table)
 
         return ToolReturn(
@@ -59,7 +72,20 @@ def create_ui_toolset(*, id: str | None = None) -> FunctionToolset[EngineDeps]:
     # Accordion
     @toolset.tool
     async def create_accordion(ctx: RunContext[EngineDeps], accordion: Accordion) -> ToolReturn:
-        """Create an Accordion component based on chosen translator engine."""
+        """Create an Accordion component based on chosen engine.
+
+        Args:
+            ctx: The RunContext containing engine dependencies (engine, id).
+            accordion: The Accordion model with items and list_type configuration.
+
+        Returns:
+            ToolReturn with:
+                - return_value: Success message string
+                - metadata.ui_component: Generated TSX or JSON component string
+                - metadata.config: Engine configuration used for rendering
+                - metadata.component_type: "accordion" component type identifier
+                - metadata.data_summary: Dict with number of elements information
+        """
         component = await ctx.deps.engine.render_accordion_component(accordion)
 
         return ToolReturn(
@@ -75,7 +101,20 @@ def create_ui_toolset(*, id: str | None = None) -> FunctionToolset[EngineDeps]:
     # Card
     @toolset.tool
     async def create_card(ctx: RunContext[EngineDeps], card: Card) -> ToolReturn:
-        """Create a Card component based on chosen translator engine."""
+        """Create a Card component based on chosen engine.
+
+        Args:
+            ctx: The RunContext containing engine dependencies (engine, id).
+            card: The Card model with title, description, content, and footer.
+
+        Returns:
+            ToolReturn with:
+                - return_value: Success message string
+                - metadata.ui_component: Generated TSX or JSON component string
+                - metadata.config: Engine configuration used for rendering
+                - metadata.component_type: "card" component type identifier
+                - metadata.data_summary: Dict with content type information
+        """
         component = await ctx.deps.engine.render_card_component(card)
 
         return ToolReturn(
@@ -91,7 +130,20 @@ def create_ui_toolset(*, id: str | None = None) -> FunctionToolset[EngineDeps]:
     # Carousel
     @toolset.tool
     async def create_carousel(ctx: RunContext[EngineDeps], carousel: Carousel) -> ToolReturn:
-        """Create a Carousel component based on chosen translator engine."""
+        """Create a Carousel component based on chosen engine.
+
+        Args:
+            ctx: The RunContext containing engine dependencies (engine, id).
+            carousel: The Carousel model with items and configuration.
+
+        Returns:
+            ToolReturn with:
+                - return_value: Success message string
+                - metadata.ui_component: Generated TSX or JSON component string
+                - metadata.config: Engine configuration used for rendering
+                - metadata.component_type: "carousel" component type identifier
+                - metadata.data_summary: Dict with number of elements information
+        """
         component = await ctx.deps.engine.render_carousel_component(carousel)
 
         return ToolReturn(
@@ -110,7 +162,20 @@ def create_ui_toolset(*, id: str | None = None) -> FunctionToolset[EngineDeps]:
     # Chart
     @toolset.tool
     async def create_chart(ctx: RunContext[EngineDeps], chart: Chart) -> ToolReturn:
-        """Create a Chart component based on chosen translator engine."""
+        """Create a Chart component based on chosen engine.
+
+        Args:
+            ctx: The RunContext containing engine dependencies (engine, id).
+            chart: The Chart model with data, config, metadata, and axis configuration.
+
+        Returns:
+            ToolReturn with:
+                - return_value: Success message string
+                - metadata.ui_component: Generated TSX or JSON component string
+                - metadata.config: Engine configuration used for rendering
+                - metadata.component_type: "chart" component type identifier
+                - metadata.data_summary: Dict with number of data points information
+        """
         component = await ctx.deps.engine.render_chart_component(chart)
 
         return ToolReturn(

@@ -77,7 +77,7 @@ toolset = create_ui_toolset()
 deps = EngineDeps(engine=engine)
 
 agent = Agent(
-    'openai:gpt-4o',
+    'openai:gpt-5.1',
     toolsets=[toolset],
     deps_type=EngineDeps
 )

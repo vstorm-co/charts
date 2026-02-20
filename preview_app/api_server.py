@@ -299,7 +299,12 @@ async def finalize_chart_creation(ctx: RunContext, ui: Chart) -> ChartToolOutput
 
 ### Methods
 def update_status(status: str, last_updated: str) -> None:
-    """Update the status.json file and global state."""
+    """Update the status.json file and global state.
+
+    Args:
+        status: Current status message (e.g., "Generating...", "Rendered Successfully")
+        last_updated: Timestamp string for when the status was updated.
+    """
     # Update in-memory state
     global current_status
     current_status["status"] = status
@@ -313,7 +318,11 @@ def update_status(status: str, last_updated: str) -> None:
 
 
 def update_component(ui_component: str) -> None:
-    """Update the GeneratedComponent.tsx file."""
+    """Update the GeneratedComponent.tsx file.
+
+    Args:
+        ui_component: The generated TSX/React code to write to disk.
+    """
     component_path = Path(__file__).parent / "src" / "GeneratedComponent.tsx"
     os.makedirs(component_path.parent, exist_ok=True)
     with open(component_path, "w") as f:
@@ -322,7 +331,12 @@ def update_component(ui_component: str) -> None:
 
 async def generate_component(prompt: str) -> tuple[str, str]:
     """Generate a component based on the prompt.
-    Returns (status_message, ui_component)
+
+    Args:
+        prompt: User's natural language description of desired component.
+
+    Returns:
+        Tuple of (status_message, ui_component).
     """
     logger.info(f"Received prompt: {prompt[:100]}{'...' if len(prompt) > 100 else ''}")
 
@@ -354,8 +368,15 @@ async def generate_component(prompt: str) -> tuple[str, str]:
 
 async def handle_generate_request(prompt: str) -> dict:
     """Handle a component generation request.
-    Updates both status.json and GeneratedComponent.tsx
-    Returns the response dict.
+
+    Updates both status.json and GeneratedComponent.tsx with the results.
+    Returns the response dict for the API endpoint.
+
+    Args:
+        prompt: User's natural language description of desired component.
+
+    Returns:
+        Dict with success, message, and lastUpdated fields.
     """
     last_updated = time.strftime("%H:%M:%S")
     logger.info(f"Starting chart generation request at {last_updated}")
@@ -405,20 +426,37 @@ app.add_middleware(
 
 
 @app.get("/api/health")
-async def health_check():
-    """Health check endpoint."""
+async def health_check() -> dict[str, str]:
+    """Health check endpoint for API status monitoring.
+
+    Returns:
+        {"status": "ok"} when the service is running.
+    """
     return {"status": "ok"}
 
 
 @app.get("/api/status")
-async def get_status():
-    """Get the current generation status."""
+async def get_status() -> dict[str, str]:
+    """Get current component generation status.
+
+    Returns:
+        Dict with 'status' and 'lastUpdated' fields showing
+        the most recent generation operation state.
+    """
     return current_status
 
 
 @app.post("/api/generate", response_model=GenerateResponse)
-async def generate_component_endpoint(request: GenerateRequest):
-    """Generate a component based on the prompt."""
+async def generate_component_endpoint(request: GenerateRequest) -> dict:
+    """Generate a UI component from natural language prompt.
+
+    Args:
+        request: GenerateRequest with 'prompt' field containing
+                user's natural language description of desired component.
+
+    Returns:
+        Dict with success status, message, and lastUpdated timestamp.
+    """
     result = await handle_generate_request(request.prompt)
     return result
 

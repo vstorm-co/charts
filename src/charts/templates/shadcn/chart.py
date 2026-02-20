@@ -1,3 +1,37 @@
+"""Jinja2 templates for generating Recharts-based chart components.
+
+This module provides Jinja2 templates for rendering five chart types:
+- BarChart: Vertical bar charts for categorical comparisons
+- LineChart: Line graphs for time series and trend visualization
+- AreaChart: Stacked area charts for cumulative data
+- PieChart: Circular charts for proportional distribution
+- RadarChart: Multi-axis charts for multivariate comparisons
+
+All templates use the Recharts library and integrate with shadcn/ui Card components.
+
+Shared template variables:
+    chart_config_json: JSON string of chart configuration (color mappings, labels)
+    chart_data_json: JSON string of data points to render
+    title: Chart title displayed in CardHeader
+    description: Chart subtitle/description
+    x_axis_key: Key in data objects for X-axis labels
+    value_key: Key containing numeric values (specific to pie charts)
+    data_keys: List of keys to render as series (excludes x_axis_key)
+
+Example:
+    ```python
+    template = SHADCN_BAR_CHART_TEMPLATE.render(
+        chart_config_json='{"sales": {"label": "Sales", "color": "#2563eb"}}',
+        chart_data_json='[{"month": "Jan", "sales": 100}]',
+        title="Monthly Sales",
+        description="Revenue over time",
+        x_axis_key="month",
+        value_key="sales",
+        data_keys=["sales"]
+    )
+    ```
+"""
+
 from jinja2 import Template
 
 # Shared Imports and Interfaces

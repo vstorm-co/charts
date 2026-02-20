@@ -193,7 +193,7 @@ deps = EngineDeps(engine=engine)
 
 # 2. Setup agent
 agent = Agent(
-    'openai:gpt-4o',
+    'openai:gpt-5.1',
     system_prompt=SHADCN_TOOLSET_PROMPT,
     toolsets=[toolset],
     deps_type=EngineDeps

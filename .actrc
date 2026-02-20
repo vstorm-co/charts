@@ -4,8 +4,5 @@
 # --container-architecture linux/amd64
 --container-daemon-socket /var/run/docker.sock
 --network host
-# --env TESTCONTAINERS_RYUK_DISABLED=true
-# --env TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
-# --env UV_LINK_MODE=copy
-# --env ASYNC_TIMEOUT=60
 --pull=false
+--env UV_LINK_MODE=copy

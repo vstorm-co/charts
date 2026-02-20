@@ -1,5 +1,7 @@
 """Tests for engines module."""
 
+from typing import cast
+
 import pytest
 
 from charts.base_types import (
@@ -46,7 +48,8 @@ class TestShadcnInitialization:
     def test_get_chart_template_error(self) -> None:
         """Test `_get_chart_template` error handling,"""
         shadcn = Shadcn("json")
-        result = shadcn._get_chart_template("random")
+        bad_type = cast(BaseChartTypes, "random")  # Force an invalid chart type
+        result = shadcn._get_chart_template(bad_type)
         assert result == "Unknown chart type"
 
 

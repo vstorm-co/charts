@@ -1,8 +1,11 @@
 """API Server for the preview app.
 Handles component generation requests from the frontend.
 
+This variant uses pydantic-ai's FunctionToolset for structured component creation,
+providing a cleaner separation between data querying and component rendering.
+
 To run:
-    uvicorn api_server:app --host 127.0.0.1 --port 8000 --reload
+    uvicorn api_server_adv_tools:app --host 127.0.0.1 --port 8000 --reload
 """
 
 import json
@@ -106,17 +109,8 @@ Do not end without returning a final output.
 
 ### Agent preparation & dependencies
 SHADCN_TRANSLATOR_DEPS = EngineProtocol
-# SHADCN_TRANSLATOR = Shadcn("json")
 
-# Simplified agent
-agent = Agent(
-    "openai:gpt-5.1",
-    system_prompt=system_prompt,
-    retries=3,
-    deps_type=SHADCN_TRANSLATOR_DEPS,
-)
-
-# Toolset usage
+# Toolset usage for structured component creation
 toolset = create_ui_toolset()
 engine = Shadcn("json")
 deps = EngineDeps(engine=engine)
@@ -129,210 +123,54 @@ toolset_agent = Agent(
     deps_type=EngineDeps,
 )
 
-# @agent.tool
-# async def query_for_table_data(ctx: RunContext[SHADCN_TRANSLATOR_DEPS]) -> TableData:
-#     """Query for data that will be used to create the table."""
-#     return TableData(headers=headers, rows=rows)
-
-# @agent.tool
-# async def query_for_chart_data(ctx: RunContext[SHADCN_TRANSLATOR_DEPS]) -> ChartData:
-#     """Query to get the latest database data."""
-#     return ChartData(data=data)
-
-# @agent.tool
-# async def query_data_for_pie_chart(ctx: RunContext[SHADCN_TRANSLATOR_DEPS]) -> ChartData:
-#     """Query to get the latest database data for the pie chart."""
-#     return ChartData(data=pie_data)
-
 
 @toolset_agent.tool
 def query_for_table_data(ctx: RunContext[EngineDeps]) -> TableData:
-    """Query for data that will be used to create the table."""
+    """Query for data that will be used to create the table.
+
+    Args:
+        ctx: The RunContext containing engine dependencies.
+
+    Returns:
+        Sample TableData with month, subscriptions, and revenue columns.
+    """
     return TableData(headers=headers, rows=rows)
 
 
 @toolset_agent.tool
 async def query_for_chart_data(ctx: RunContext[EngineDeps]) -> ChartData:
-    """Query to get the latest database data."""
+    """Query to get the latest database data.
+
+    Args:
+        ctx: The RunContext containing engine dependencies.
+
+    Returns:
+        Sample ChartData with monthly subscription and revenue information.
+    """
     return ChartData(data=data)
 
 
 @toolset_agent.tool
 async def query_data_for_pie_chart(ctx: RunContext[EngineDeps]) -> ChartData:
-    """Query to get the latest database data for the pie chart."""
+    """Query to get the latest database data for the pie chart.
+
+    Args:
+        ctx: The RunContext containing engine dependencies.
+
+    Returns:
+        Sample ChartData with channel distribution and visitor counts.
+    """
     return ChartData(data=pie_data)
-
-
-# @agent.tool
-# async def create_table(
-#     ctx: RunContext[SHADCN_TRANSLATOR_DEPS],
-#     table_data: TableData,
-#     caption: str,
-#     footer: TableFooter | None = None
-# ) -> ToolReturn:
-#     """Create a Table component based on the provided data and configuration."""
-#     # Instantiate the Table object
-#     table_obj = Table(table_data=table_data, caption=caption, footer=footer)
-
-#     # Transform the data
-#     component_code = await ctx.deps.render_table_component(table_obj)
-#     return ToolReturn(
-#         return_value=f"Successfully created table: {caption}",
-#         metadata={
-#             "ui_component": component_code,
-#             "component_type": table_obj.component_type,
-#             "data_summary": {"rows": len(table_data.rows)}
-#         }
-#     )
-
-# @agent.tool
-# async def create_accordion(
-#     ctx: RunContext[SHADCN_TRANSLATOR_DEPS],
-#     accordions: list[Accordion],
-#     list_type: BaseAccordionTypes
-# ) -> ToolReturn:
-#     """Create an Accordion component based on provided data and configuration."""
-#     # Instantiate the AccordionList object
-#     accordion_obj = Accordion(items=accordions, list_type=list_type)
-
-#     # Transform the data
-#     component_code = await ctx.deps.render_accordion_component(accordion_obj)
-#     return ToolReturn(
-#         return_value=f"Successfully created accordion with {len(accordions)} elements",
-#         metadata={
-#             "ui_component": component_code,
-#             "component_type": accordion_obj.component_type,
-#             "data_summary": {"num_elements": len(accordions)}
-#         }
-#     )
-
-# @agent.tool
-# async def create_card(
-#     ctx: RunContext[SHADCN_TRANSLATOR_DEPS],
-#     card: Card,
-# ) -> ToolReturn:
-#     """Create a Card component based on provided data and configuration."""
-#     # Instantiate the Card object
-#     card_obj = Card(
-#         title=card.title,
-#         description=card.description,
-#         content=card.content,
-#         footer=card.footer
-#     )
-
-#     # Transform the data
-#     component_code = await ctx.deps.render_card_component(card_obj)
-#     return ToolReturn(
-#         return_value=f"Successfully created card component with title: {card_obj.title}",
-#         metadata={
-#             "ui_component": component_code,
-#             "component_type": card_obj.component_type,
-#             "data_summary": {"content_type": f"{type(card_obj.content)}"}
-#         }
-#     )
-
-# @agent.tool
-# async def create_carousel_component(
-#     ctx: RunContext[SHADCN_TRANSLATOR_DEPS],
-#     content: str | Card,
-# ) -> ToolReturn:
-#     """Create a CarouselItem component based on the user query and instructions."""
-#     carousel_item_obj = CarouselItem(content=content)
-#     return ToolReturn(
-#         return_value=carousel_item_obj
-#     )
-
-
-# @agent.tool
-# async def create_complete_carousel(
-#     ctx: RunContext[SHADCN_TRANSLATOR_DEPS],
-#     carousel_items: list[CarouselItem],
-#     carousel_config: CarouselConfig,
-# ) -> ToolReturn:
-#     """Create a Carousel component based on provided data and configuration."""
-#     # Instantiate the Carousel object
-#     carousel_obj = Carousel(
-#         items=carousel_items,
-#         config=carousel_config
-#     )
-
-#     # Transform the data
-#     component_code = await ctx.deps.render_carousel_component(carousel_obj)
-#     return ToolReturn(
-#         return_value=(
-#                f"Successfully created carousel component with"
-#                "{len(carousel_items)} elements."),
-#         metadata={
-#             "ui_component": component_code,
-#             "component_type": carousel_obj.component_type,
-#             "data_summary": {"num_elements": len(carousel_items)}
-#         }
-#     )
-
-# @agent.tool
-# async def create_chart_config(ctx: RunContext[SHADCN_TRANSLATOR_DEPS]) -> ChartConfig:
-#     """Create a ChartConfig for a chart."""
-#     return ChartConfig(config=config_instance) #TODO - this is a placeholder for tests
-
-# @agent.tool
-# async def create_pie_chart_config(ctx: RunContext[SHADCN_TRANSLATOR_DEPS]) -> ChartConfig:
-#     """Create a ChartConfig for a pie chart."""
-#     return ChartConfig(config=pie_config)
-
-# @agent.tool
-# async def create_chart_metadata(
-#     ctx: RunContext[SHADCN_TRANSLATOR_DEPS],
-#     title: str,
-#     subtitle: str,
-#     description: str
-# ) -> ChartMetadata:
-#     """Create a ChartMetadata describing the data used to present on the chart."""
-#     return ChartMetadata(title=title, subtitle=subtitle, description=description)
-
-
-# @agent.tool
-# async def create_complete_chart(
-#     ctx: RunContext[SHADCN_TRANSLATOR_DEPS],
-#     chart_type: str,
-#     metadata: ChartMetadata,
-#     chart_config: ChartConfig,
-#     chart_data: ChartData,
-#     x_key_axis: str
-# ) -> ToolReturn:
-#     """
-#     Create a Chart object based on provided data and configuration.
-#     Be very precise about which type of chart the user wants since they can differ in
-#     terms of needed configuration or data.
-#     Before invoking this function, all previous configuration and query functions
-#     providing data should be called in this order:
-#     * query_for_chart_data / query_for_pie_chart_data
-#     * create_chart_config / create_pie_chart_config
-#     * create_chart_metadata
-#     """
-#     # Instantiate the Chart object
-#     chart_obj = Chart(
-#         chart_type=chart_type,
-#         metadata=metadata,
-#         chart_config=chart_config,
-#         chart_data=chart_data,
-#         x_axis_key=x_key_axis
-#     )
-
-#     # Transform the data
-#     component_code = await ctx.deps.render_chart_component(chart_obj)
-#     return ToolReturn(
-#         return_value=f"Successfully created chart: {chart_obj.metadata.title}",
-#         metadata={
-#             "ui_component": component_code,
-#             "component_type": chart_obj.component_type,
-#             "data_summary": {"num_elements": (len(chart_data.data))}
-#         }
-#     )
 
 
 ### Methods
 def update_status(status: str, last_updated: str) -> None:
-    """Update the status.json file and global state."""
+    """Update the status.json file and global state.
+
+    Args:
+        status: Current status message (e.g., "Generating...", "Rendered Successfully")
+        last_updated: Timestamp string for when the status was updated.
+    """
     # Update in-memory state
     global current_status
     current_status["status"] = status
@@ -346,7 +184,11 @@ def update_status(status: str, last_updated: str) -> None:
 
 
 def update_component(ui_component: str) -> None:
-    """Update the GeneratedComponent.tsx file."""
+    """Update the GeneratedComponent.tsx file.
+
+    Args:
+        ui_component: The generated TSX/React code to write to disk.
+    """
     component_path = Path(__file__).parent / "src" / "GeneratedComponent.tsx"
     os.makedirs(component_path.parent, exist_ok=True)
     with open(component_path, "w") as f:
@@ -355,21 +197,20 @@ def update_component(ui_component: str) -> None:
 
 async def generate_component(prompt: str) -> tuple[str, str]:
     """Generate a component based on the prompt.
-    Returns (status_message, ui_component)
+
+    Args:
+        prompt: User's natural language description of desired component.
+
+    Returns:
+        Tuple of (status_message, ui_component).
     """
     logger.info(f"Received prompt: {prompt[:100]}{'...' if len(prompt) > 100 else ''}")
 
     try:
-        # result = await agent.run(
-        #     prompt, deps=SHADCN_TRANSLATOR
-        # )
-
         result = await toolset_agent.run(prompt, deps=deps)
 
         if result and result.output:
-            # logger.info(result.output)
             messages = json.loads(result.all_messages_json())
-            # logger.info(messages)
 
             for msg in messages:
                 if "parts" in msg:
@@ -379,27 +220,12 @@ async def generate_component(prompt: str) -> tuple[str, str]:
                             and part["metadata"]
                             and "ui_component" in part["metadata"]
                         ):
-                            # if "ui_component" in part["metadata"].keys():
                             ui_component = part["metadata"]["ui_component"]
                             config = part["metadata"].get("config", {})
 
                 if "usage" in msg:
                     logger.info(f"Partial usage: {msg['usage']}")
 
-            ### TEST
-            # create a table. add predictions to data for 6 upcoming months
-
-            ### USAGE
-            # Usage: RunUsage(
-            # input_tokens=1771, output_tokens=184,
-            # details={
-            # 'accepted_prediction_tokens': 0,
-            # 'audio_tokens': 0,
-            # 'reasoning_tokens': 0,
-            # 'rejected_prediction_tokens': 0},
-            # requests=3, tool_calls=2)
-
-            # ui_component = result.output.metadata.ui_component or ""
             status_msg = result.output or "Component generated successfully"
 
             # Log the output
@@ -420,8 +246,15 @@ async def generate_component(prompt: str) -> tuple[str, str]:
 
 async def handle_generate_request(prompt: str) -> dict:
     """Handle a component generation request.
-    Updates both status.json and GeneratedComponent.tsx
-    Returns the response dict.
+
+    Updates both status.json and GeneratedComponent.tsx with the results.
+    Returns the response dict for the API endpoint.
+
+    Args:
+        prompt: User's natural language description of desired component.
+
+    Returns:
+        Dict with success, message, and lastUpdated fields.
     """
     last_updated = time.strftime("%H:%M:%S")
     logger.info(f"Starting chart generation request at {last_updated}")
@@ -471,20 +304,37 @@ app.add_middleware(
 
 
 @app.get("/api/health")
-async def health_check():
-    """Health check endpoint."""
+async def health_check() -> dict[str, str]:
+    """Health check endpoint for API status monitoring.
+
+    Returns:
+        {"status": "ok"} when the service is running.
+    """
     return {"status": "ok"}
 
 
 @app.get("/api/status")
-async def get_status():
-    """Get the current generation status."""
+async def get_status() -> dict[str, str]:
+    """Get current component generation status.
+
+    Returns:
+        Dict with 'status' and 'lastUpdated' fields showing
+        the most recent generation operation state.
+    """
     return current_status
 
 
 @app.post("/api/generate", response_model=GenerateResponse)
-async def generate_component_endpoint(request: GenerateRequest):
-    """Generate a component based on the prompt."""
+async def generate_component_endpoint(request: GenerateRequest) -> dict:
+    """Generate a UI component from natural language prompt.
+
+    Args:
+        request: GenerateRequest with 'prompt' field containing
+                user's natural language description of desired component.
+
+    Returns:
+        Dict with success status, message, and lastUpdated timestamp.
+    """
     result = await handle_generate_request(request.prompt)
     return result
 

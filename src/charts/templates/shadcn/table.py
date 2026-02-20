@@ -1,3 +1,30 @@
+"""Jinja2 template for generating shadcn/ui Table components.
+
+The table template generates a complete React component with:
+- TableCaption for accessibility and context
+- TableHeader with sortable headers (optional right alignment for numeric columns)
+- TableBody with mapped data rows
+- Optional TableFooter with calculated totals
+
+Template variables:
+    items_json: JSON string of row data
+    headers: List of column header names
+    caption: Table caption text
+    footer_text: Footer summary keyword (e.g., "Total")
+    footer_value: Calculated footer value for the last column
+
+Example:
+    ```python
+    template = SHADCN_TABLE_TEMPLATE.render(
+        items_json=json.dumps([{"name": "Alice", "score": 95}]),
+        headers=["name", "score"],
+        caption="Student Performance",
+        footer_text="Average",
+        footer_value=95.0
+    )
+    ```
+"""
+
 from jinja2 import Template
 
 SHADCN_TABLE_TEMPLATE = Template("""

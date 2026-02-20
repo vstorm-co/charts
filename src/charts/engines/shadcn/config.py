@@ -1,3 +1,26 @@
+"""Configuration classes for the shadcn rendering engine.
+
+This module provides concrete implementations of the base configuration types
+defined in `charts.base_types`. These classes define the default theme, color
+palettes, and library settings used by the Shadcn engine for component generation.
+
+Key classes:
+    ShadcnLightColors: Light theme color palette with semantic colors
+    ShadcnDarkColors: Dark theme color palette with accessible contrasts
+    ShadcnColorPalette: Combined light/dark color definitions
+    ShadcnLibraryConfig: Library-specific settings (framework, paths, imports)
+    ShadcnUIConfig: UI appearance configuration (mode, radius, density)
+    ShadcnAgentUIConfig: Master configuration passed to AI agents
+
+Example:
+    ```python
+    from charts.engines.shadcn.config import ShadcnAgentUIConfig
+
+    config = ShadcnAgentUIConfig()
+    engine = Shadcn(return_mode="tsx", config=config)
+    ```
+"""
+
 from typing import Literal
 
 from pydantic import Field

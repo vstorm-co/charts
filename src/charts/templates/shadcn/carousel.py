@@ -1,3 +1,28 @@
+"""Jinja2 template for generating shadcn/ui Carousel components.
+
+Renders horizontal or vertical scrolling carousels with navigation controls.
+Supports component dispatching to render Card or simple string content within
+each carousel item. Uses Recharts integration for mixed chart/carousel layouts.
+
+Template variables:
+    items_json: JSON string of carousel item data
+    align: Alignment option ("start" or None)
+    loop: Boolean string for infinite looping ("true"/"false")
+    orientation: Scrolling direction ("horizontal" or "vertical")
+    container_class: CSS class string for the carousel container
+
+Example:
+    ```python
+    template = SHADCN_CAROUSEL_TEMPLATE.render(
+        items_json='[{"content": "Item 1"}, {"content": "Item 2"}]',
+        align="start",
+        loop="true",
+        orientation="horizontal",
+        container_class="max-w-md"
+    )
+    ```
+"""
+
 from jinja2 import Template
 
 SHADCN_CAROUSEL_TEMPLATE = Template("""

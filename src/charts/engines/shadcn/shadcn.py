@@ -46,6 +46,23 @@ CONFIG = ShadcnAgentUIConfig()
 
 
 class Shadcn:
+    """Engine for rendering UI components to shadcn/ui React code or JSON data.
+
+    Converts Pydantic model objects (Chart, Table, Card, Accordion, Carousel)
+    into target format code (TSX/React or JSON) using Jinja2 templates.
+
+    Attributes:
+        name: Engine identifier ("shadcn")
+        return_mode: Output format - "tsx" for React code, "json" for raw data
+        config: Agent UI configuration with theme and library settings
+
+    Example:
+        ```python
+        engine = Shadcn(return_mode="tsx", config=ShadcnAgentUIConfig())
+        tsx_code = await engine.render_chart_component(chart)
+        ```
+    """
+
     name: str
     return_mode: Literal["json", "tsx"]
     config: BaseAgentUIConfig
@@ -53,7 +70,14 @@ class Shadcn:
     def __init__(
         self, return_mode: Literal["json", "tsx"], config: BaseAgentUIConfig = CONFIG
     ) -> None:
+        """Initialize the Shadcn rendering engine.
 
+        Args:
+            return_mode: Output format - "tsx" generates React/TypeScript code,
+                        "json" returns raw model data as JSON string.
+            config: Agent UI configuration containing theme, library settings,
+                   and component overrides. Uses default CONFIG if not provided.
+        """
         self.name = "shadcn"
         self.return_mode = return_mode
         self.config = config
