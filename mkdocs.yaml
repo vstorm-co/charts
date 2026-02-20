@@ -1,4 +1,5 @@
 site_name: Charts - Agentic UI Component Generation
+site_dir: site
 site_description: Enable AI agents to generate structured UI component configurations for shadcn/ui
 site_url: https://vstorm-co.github.io/charts/
 repo_url: https://github.com/vstorm-co/charts
@@ -28,7 +29,7 @@ theme:
     text: Inter
     code: JetBrains Mono
   logo: assets/logo.svg
-  favicon: assets/favicon.png
+  # favicon: assets/favicon.png
   icon:
     repo: fontawesome/brands/github
     admonition:
@@ -74,9 +75,11 @@ plugins:
       separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - social:
       enabled: !ENV [CI, false]
+      # enabled: false
   - mkdocstrings:
       handlers:
         python:
+          paths: [.]
           options:
             docstring_style: google
             show_source: true
@@ -118,6 +121,7 @@ markdown_extensions:
   - pymdownx.mark
   - pymdownx.smartsymbols
   - pymdownx.snippets:
+      base_path: [docs]
       auto_append:
         - includes/abbreviations.md
   - pymdownx.superfences:

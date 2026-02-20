@@ -66,7 +66,7 @@ class Shadcn:
             "area": SHADCN_AREA_CHART_TEMPLATE,
         }
 
-    def __get_chart_template(self, chart_type: BaseChartTypes) -> Template | str:
+    def _get_chart_template(self, chart_type: BaseChartTypes) -> Template | str:
         try:
             return self.CHART_TEMPLATES[chart_type]
         except KeyError:
@@ -163,7 +163,7 @@ class Shadcn:
             return chart.model_dump_json(indent=4, ensure_ascii=False)
 
         # Get proper template
-        template = self.__get_chart_template(chart.chart_type)
+        template = self._get_chart_template(chart.chart_type)
 
         # Identify keys
         value_key = "value"

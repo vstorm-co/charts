@@ -44,9 +44,9 @@ class TestShadcnInitialization:
         assert shadcn.return_mode == "tsx"
 
     def test_get_chart_template_error(self) -> None:
-        """Test `__get_chart_template` error handling,"""
+        """Test `_get_chart_template` error handling,"""
         shadcn = Shadcn("json")
-        result = shadcn._Shadcn__get_chart_template("random")
+        result = shadcn._get_chart_template("random")
         assert result == "Unknown chart type"
 
 
@@ -601,6 +601,6 @@ class TestShadcnRenderChartComponent:
         result = await shadcn.render_chart_component(chart)
 
         # 3Verification
-        # __get_chart_template will return "Unknown chart type" (a string)
+        # _get_chart_template will return "Unknown chart type" (a string)
         # isinstance(template, Template) will be False
         assert result == "Chart could not be created"
