@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e91e63;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff4081;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Database cylinder -->
+  <ellipse cx="50" cy="25" rx="35" ry="12" fill="url(#gradient)" />
+  <rect x="15" y="25" width="70" height="45" fill="url(#gradient)" />
+  <ellipse cx="50" cy="70" rx="35" ry="12" fill="url(#gradient)" />
+  <!-- Inner lines for depth -->
+  <ellipse cx="50" cy="25" rx="35" ry="12" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.4"/>
+  <ellipse cx="50" cy="45" rx="35" ry="12" fill="none" stroke="#fff" stroke-width="1.2" opacity="0.25"/>
+  <ellipse cx="50" cy="70" rx="35" ry="12" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.4"/>
+  <!-- Side lines -->
+  <line x1="15" y1="25" x2="15" y2="70" stroke="#fff" stroke-width="1.5" opacity="0.4"/>
+  <line x1="85" y1="25" x2="85" y2="70" stroke="#fff" stroke-width="1.5" opacity="0.4"/>
+</svg>

@@ -11,13 +11,15 @@ dependencies = [
     "pydantic-ai>=0.1.0",
     "python-dotenv>=1.0.1",
     "jinja2>=3.1.6",
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
 ]
 
 # [project.urls]
-# Homepage = "https://github.com/vstorm-co/sql-toolset-pydantic-ai"
-# Documentation = "https://github.com/vstorm-co/sql-toolset-pydantic-ai"
-# Repository = "https://github.com/vstorm-co/sql-toolset-pydantic-ai"
-# Issues = "https://github.com/vstorm-co/sql-toolset-pydantic-ai/issues"
+# Homepage = "https://github.com/vstorm-co/charts"
+# Documentation = "https://github.com/vstorm-co/charts"
+# Repository = "https://github.com/vstorm-co/charts"
+# Issues = "https://github.com/vstorm-co/charts/issues"
 
 [build-system]
 requires = ["hatchling"]
@@ -26,9 +28,9 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/charts"]
 
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["charts*"]
+# [tool.setuptools.packages.find]
+# where = ["src"]
+# include = ["charts*"]
 
 [dependency-groups]
 dev = [
@@ -43,6 +45,9 @@ dev = [
     "pyright>=1.1.408",
     "mypy>=1.19.1",
     "icecream>=2.1.10",
+    "hypercorn>=0.17.0",
+    "fastapi>=0.128.0",
+    "uvicorn>=0.40.0",
 ]
 lint = ["ruff>=0.8.0", "pyright>=1.1.400", "mypy>=1.0.0"]
 docs = [
@@ -75,6 +80,7 @@ max-complexity = 15
 
 [tool.ruff.format]
 quote-style = "double"
+line-ending = "auto"
 
 # Pytest configuration
 [tool.pytest.ini_options]
@@ -85,7 +91,7 @@ asyncio_default_fixture_loop_scope = "function"
 # Coverage configuration
 [tool.coverage.run]
 branch = true
-source = ["src/charts"]
+source = ["src/charts"]  # Simpler and safer
 data_file = ".coverage/.coverage"
 
 [tool.coverage.report]
@@ -115,7 +121,7 @@ directory = "htmlcov"
 pythonVersion = "3.10"
 typeCheckingMode = "basic"
 include = ["src/charts"]
-exclude = ["**/__pycache__", ".venv*", "tests"]
+exclude = ["**/__pycache__", ".venv*", "tests", "preview_app"]
 reportMissingTypeStubs = false
 reportMissingImports = false
 reportMissingModuleSource = false
@@ -134,6 +140,7 @@ warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
 explicit_package_bases = true
+plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
 module = "tests.*"
