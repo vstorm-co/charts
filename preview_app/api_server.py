@@ -20,7 +20,7 @@ from loguru import logger
 from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
 
-from charts.base_types import BaseComponent
+from charts.types import BaseComponent
 from charts.types.shadcn.accordion import (
     Accordion,
     AccordionList,
@@ -35,7 +35,14 @@ from charts.types.shadcn.carousel import (
     CarouselOrientation,
     CarouselToolOutput,
 )
-from charts.types.shadcn.chart import Chart, ChartConfig, ChartData, ChartMetadata, ChartToolOutput, ChartTypes
+from charts.types.shadcn.chart import (
+    Chart,
+    ChartConfig,
+    ChartData,
+    ChartMetadata,
+    ChartToolOutput,
+    ChartTypes,
+)
 from charts.types.shadcn.table import Table, TableData, TableFooter, TableOutputTool
 
 # Add the project root to the path for imports
@@ -159,7 +166,7 @@ async def create_card(
 @agent.tool
 async def finalize_card_creation(ctx: RunContext, ui: Card) -> CardOutputTool:
     """Finalize the creation of the card component by wrapping it in the output tool."""
-    return CardOutputTool(ui=ui, ui_element="")
+    return CardOutputTool(ui=ui, ui_component="")
 
 
 ### Accordion
@@ -182,19 +189,20 @@ async def merge_accordions(
 @agent.tool
 async def finalize_accordion_creation(ctx: RunContext, ui: AccordionList) -> AccordionToolOutput:
     """Finalize the creation of the accordion component by wrapping it in the output tool."""
-    return AccordionToolOutput(ui=ui, ui_element="")
+    return AccordionToolOutput(ui=ui, ui_component="")
 
 
 ### Carousel
 @agent.tool
-async def create_carousel_item(ctx: RunContext, content: str | BaseComponent) -> CarouselItem:
+async def create_carousel_item(ctx: RunContext, content: str | Card) -> CarouselItem:
     """Generate a CarouselItem for further usage in Carousel component"""
     return CarouselItem(content=content)
 
 
 @agent.tool
 async def create_carousel_config(
-    ctx: RunContext, orientation: CarouselOrientation,
+    ctx: RunContext,
+    orientation: CarouselOrientation,
 ) -> CarouselConfig:
     """Create a CarouselConfig item to determine the behavior of final component."""
     return CarouselConfig(orientation=orientation)
@@ -202,15 +210,18 @@ async def create_carousel_config(
 
 @agent.tool
 async def create_complete_carousel(
-    ctx: RunContext, items: list[CarouselItem], config: CarouselConfig,
+    ctx: RunContext,
+    items: list[CarouselItem],
+    config: CarouselConfig,
 ) -> Carousel:
     """Create a complete Carousel component with items and config."""
     return Carousel(items=items, config=config)
 
+
 @agent.tool
 async def finalize_carousel_creation(ctx: RunContext, ui: Carousel) -> CarouselToolOutput:
     """Finalize the creation of the carousel component by wrapping it in the output tool."""
-    return CarouselToolOutput(ui=ui, ui_element="")
+    return CarouselToolOutput(ui=ui, ui_component="")
 
 
 # Table
@@ -218,6 +229,7 @@ async def finalize_carousel_creation(ctx: RunContext, ui: Carousel) -> CarouselT
 async def query_for_table_data(ctx: RunContext) -> TableData:
     """Query for data that will be used to create the table."""
     return TableData(headers=headers, rows=rows)
+
 
 @agent.tool
 async def create_table(
@@ -229,10 +241,11 @@ async def create_table(
     """Create a Table component based on the provided data, caption, and optional footer."""
     return Table(table_data=table_data, caption=caption, footer=footer)
 
+
 @agent.tool
 async def finalize_table_creation(ctx: RunContext, ui: Table) -> TableOutputTool:
     """Finalize the creation of the table component by wrapping it in the output tool."""
-    return TableOutputTool(ui=ui, ui_element="")
+    return TableOutputTool(ui=ui, ui_component="")
 
 
 ### Charts
@@ -241,30 +254,57 @@ async def query_for_chart_data(ctx: RunContext) -> ChartData:
     """Query to get the latest database data."""
     return ChartData(data=data)
 
+
 @agent.tool
 async def get_chart_config(ctx: RunContext) -> ChartConfig:
     """Get the configuration for the chart."""
     return ChartConfig(config=config_instance)
 
+
 @agent.tool
-async def create_chart_metadata(ctx: RunContext, title: str, subtitle: str, description: str) -> ChartMetadata:
+async def create_chart_metadata(
+    ctx: RunContext,
+    title: str,
+    subtitle: str,
+    description: str,
+) -> ChartMetadata:
     """Create metadata for the chart component."""
     return ChartMetadata(title=title, subtitle=subtitle, description=description)
 
+
 @agent.tool
-async def create_chart(ctx: RunContext, chart_type: ChartTypes, data: ChartData, config: ChartConfig, metadata: ChartMetadata, x_axis_key: str) -> Chart:
+async def create_chart(
+    ctx: RunContext,
+    chart_type: ChartTypes,
+    data: ChartData,
+    config: ChartConfig,
+    metadata: ChartMetadata,
+    x_axis_key: str,
+) -> Chart:
     """Create a Chart component based on the provided data and configuration."""
-    return Chart(chart_type=chart_type, chart_data=data, chart_config=config, metadata=metadata, x_axis_key=x_axis_key)
+    return Chart(
+        chart_type=chart_type,
+        chart_data=data,
+        chart_config=config,
+        metadata=metadata,
+        x_axis_key=x_axis_key,
+    )
+
 
 @agent.tool
 async def finalize_chart_creation(ctx: RunContext, ui: Chart) -> ChartToolOutput:
     """Finalize the creation of the chart component by wrapping it in the output tool."""
-    return ChartToolOutput(ui=[ui], ui_element="")
+    return ChartToolOutput(ui=[ui], ui_component="")
 
 
 ### Methods
 def update_status(status: str, last_updated: str) -> None:
-    """Update the status.json file and global state."""
+    """Update the status.json file and global state.
+
+    Args:
+        status: Current status message (e.g., "Generating...", "Rendered Successfully")
+        last_updated: Timestamp string for when the status was updated.
+    """
     # Update in-memory state
     global current_status
     current_status["status"] = status
@@ -277,17 +317,26 @@ def update_status(status: str, last_updated: str) -> None:
         json.dump(current_status, f)
 
 
-def update_component(ui_element: str) -> None:
-    """Update the GeneratedComponent.tsx file."""
+def update_component(ui_component: str) -> None:
+    """Update the GeneratedComponent.tsx file.
+
+    Args:
+        ui_component: The generated TSX/React code to write to disk.
+    """
     component_path = Path(__file__).parent / "src" / "GeneratedComponent.tsx"
     os.makedirs(component_path.parent, exist_ok=True)
     with open(component_path, "w") as f:
-        f.write(ui_element)
+        f.write(ui_component)
 
 
 async def generate_component(prompt: str) -> tuple[str, str]:
     """Generate a component based on the prompt.
-    Returns (status_message, ui_element)
+
+    Args:
+        prompt: User's natural language description of desired component.
+
+    Returns:
+        Tuple of (status_message, ui_component).
     """
     logger.info(f"Received prompt: {prompt[:100]}{'...' if len(prompt) > 100 else ''}")
 
@@ -299,15 +348,16 @@ async def generate_component(prompt: str) -> tuple[str, str]:
 
         if result and result.output:
             print(result.output)
-            ui_element = result.output.ui_element or ""
+            ui_component = result.output.ui_component or ""
             status_msg = result.output.text or "Component generated successfully"
 
             # Log the output
             logger.info("Generated component successfully")
             logger.info(f"Status message: {status_msg}")
-            logger.info(f"UI element length: {len(ui_element)} characters")
+            logger.info(f"UI element length: {len(ui_component)} characters")
+            logger.info(f"Usage: {result.usage()}")
 
-            return status_msg, ui_element
+            return status_msg, ui_component
         logger.warning("No output received from agent")
         return "No output received", ""
 
@@ -318,8 +368,15 @@ async def generate_component(prompt: str) -> tuple[str, str]:
 
 async def handle_generate_request(prompt: str) -> dict:
     """Handle a component generation request.
-    Updates both status.json and GeneratedComponent.tsx
-    Returns the response dict.
+
+    Updates both status.json and GeneratedComponent.tsx with the results.
+    Returns the response dict for the API endpoint.
+
+    Args:
+        prompt: User's natural language description of desired component.
+
+    Returns:
+        Dict with success, message, and lastUpdated fields.
     """
     last_updated = time.strftime("%H:%M:%S")
     logger.info(f"Starting chart generation request at {last_updated}")
@@ -328,10 +385,10 @@ async def handle_generate_request(prompt: str) -> dict:
     update_status("Generating...", last_updated)
 
     try:
-        status_msg, ui_element = await generate_component(prompt)
+        status_msg, ui_component = await generate_component(prompt)
 
-        if ui_element:
-            update_component(ui_element)
+        if ui_component:
+            update_component(ui_component)
             status = "Rendered Successfully"
             logger.info("Component updated successfully")
         else:
@@ -369,20 +426,37 @@ app.add_middleware(
 
 
 @app.get("/api/health")
-async def health_check():
-    """Health check endpoint."""
+async def health_check() -> dict[str, str]:
+    """Health check endpoint for API status monitoring.
+
+    Returns:
+        {"status": "ok"} when the service is running.
+    """
     return {"status": "ok"}
 
 
 @app.get("/api/status")
-async def get_status():
-    """Get the current generation status."""
+async def get_status() -> dict[str, str]:
+    """Get current component generation status.
+
+    Returns:
+        Dict with 'status' and 'lastUpdated' fields showing
+        the most recent generation operation state.
+    """
     return current_status
 
 
 @app.post("/api/generate", response_model=GenerateResponse)
-async def generate_component_endpoint(request: GenerateRequest):
-    """Generate a component based on the prompt."""
+async def generate_component_endpoint(request: GenerateRequest) -> dict:
+    """Generate a UI component from natural language prompt.
+
+    Args:
+        request: GenerateRequest with 'prompt' field containing
+                user's natural language description of desired component.
+
+    Returns:
+        Dict with success status, message, and lastUpdated timestamp.
+    """
     result = await handle_generate_request(request.prompt)
     return result
 

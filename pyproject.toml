@@ -28,9 +28,9 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/charts"]
 
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["charts*"]
+# [tool.setuptools.packages.find]
+# where = ["src"]
+# include = ["charts*"]
 
 [dependency-groups]
 dev = [
@@ -91,7 +91,7 @@ asyncio_default_fixture_loop_scope = "function"
 # Coverage configuration
 [tool.coverage.run]
 branch = true
-source = ["src/charts"]
+source = ["src/charts"]  # Simpler and safer
 data_file = ".coverage/.coverage"
 
 [tool.coverage.report]
@@ -121,7 +121,7 @@ directory = "htmlcov"
 pythonVersion = "3.10"
 typeCheckingMode = "basic"
 include = ["src/charts"]
-exclude = ["**/__pycache__", ".venv*", "tests"]
+exclude = ["**/__pycache__", ".venv*", "tests", "preview_app"]
 reportMissingTypeStubs = false
 reportMissingImports = false
 reportMissingModuleSource = false
@@ -140,6 +140,7 @@ warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
 explicit_package_bases = true
+plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
 module = "tests.*"

@@ -213,3 +213,4 @@ package-lock.json
 GeneratedComponent.tsx
 status.json
 .DS_Store
+mcp/
