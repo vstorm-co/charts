@@ -36,9 +36,8 @@ Located in [`src/charts/base_types.py`](https://github.com/vstorm-co/charts/blob
 This layer defines abstract base classes that all components inherit from:
 
 | Class | Purpose |
-|-------|---------|
+| ------- | --------- |
 | `BaseComponent` | Base class with `component_type` field |
-| `BaseToolOutput` | Agent tool output structure |
 | `BaseTable`, `BaseChart`, `BaseAccordion`, `BaseCard`, `BaseCarousel` | Component base classes |
 | `BaseColors`, `BaseColorPalette` | Color configuration |
 | `BaseLibraryConfig`, `BaseUIConfig`, `BaseAgentUIConfig` | Configuration hierarchy |

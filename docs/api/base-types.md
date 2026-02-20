@@ -2,6 +2,14 @@
 
 Base classes and configuration models for the Charts library.
 
+Note: While this document describes all available base types, not all are exported from the main `charts` package. The main package exports:
+
+- `CustomType`
+- `BaseComponent`
+- `ChartData`, `ChartConfig`, `Chart` (chart types)
+- `create_ui_toolset`
+- `Shadcn`
+
 ## Classes
 
 ### BaseComponent
@@ -14,13 +22,6 @@ Base classes and configuration models for the Charts library.
 ### CustomType
 
 ::: charts.base_types.CustomType
-    options:
-      show_root_toc: true
-      show_bases: true
-
-### BaseToolOutput
-
-::: charts.base_types.BaseToolOutput
     options:
       show_root_toc: true
       show_bases: true

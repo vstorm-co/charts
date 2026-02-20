@@ -5,8 +5,9 @@ The Charts library includes the built-in Shadcn engine for TSX rendering.
 ## Shadcn Engine
 
 ::: charts.engines.shadcn.Shadcn
-:members:
-:show-inheritance:
+    options:
+      show_root_toc: true
+      show_bases: true
 
 ### Constructor
 
@@ -24,23 +25,23 @@ Shadcn(
 
 ### Methods
 
-#### render_table_component(table: BaseTable) -> str
+#### async render_table_component(table: BaseTable) -> str
 
 Transform the Table object into a shadcn component.
 
-#### render_accordion_component(accordion: BaseAccordion) -> str
+#### async render_accordion_component(accordion: BaseAccordion) -> str
 
 Transform the Accordion object into a shadcn component.
 
-#### render_card_component(card: BaseCard) -> str
+#### async render_card_component(card: BaseCard) -> str
 
 Transform the Card object into a shadcn component.
 
-#### render_carousel_component(carousel: BaseCarousel) -> str
+#### async render_carousel_component(carousel: BaseCarousel) -> str
 
 Transform the Carousel object into a shadcn component.
 
-#### render_chart_component(chart: BaseChart) -> str
+#### async render_chart_component(chart: BaseChart) -> str
 
 Transform the Chart object into a shadcn component.
 
@@ -57,17 +58,12 @@ The Shadcn engine supports these chart types:
 ## Example Usage
 
 ```python
-from charts.engines.shadcn import Shadcn
-from charts.base_types import BaseAgentUIConfig, BaseUIConfig, BaseColorPalette
+from charts.engines.shadcn import Shadcn, ShadcnAgentUIConfig
 
-# Create config (or use default)
-config = BaseAgentUIConfig(
-    theme=BaseUIConfig(color_palette=BaseColorPalette()),
-)
-
-# Create engine with TSX output
-engine = Shadcn(return_mode='tsx', config=config)
-
-# Or use the default config
+# Create engine with TSX output and default config
 engine = Shadcn(return_mode='tsx')
+
+# Or use a custom config
+config = ShadcnAgentUIConfig()
+engine = Shadcn(return_mode='tsx', config=config)
 ```

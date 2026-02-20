@@ -4,18 +4,6 @@ The Charts library provides a complete toolkit for AI agents to generate UI comp
 
 ## Package Structure
 
-```{toctree}
-:maxdepth: 2
-
-base-types.md
-protocol.md
-toolset.md
-engines.md
-types-shadcn.md
-```
-
-## Quick Links
-
 - [Base Types](./base-types.md) - Core base classes and configuration models
 - [Engine Protocol](./protocol.md) - Interface for component rendering engines
 - [Toolset API](./toolset.md) - FunctionToolset for AI agents
